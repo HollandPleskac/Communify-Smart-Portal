@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import axios from 'axios';
 
 import firebase from 'firebase/app'
 import 'firebase/auth'
@@ -38,16 +39,46 @@ export const AuthContextProvider = (props) => {
     }
   }
 
-  const signup = async (email, password) => {
-    try {
-      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password)
-      const user = userCredential.user
-      router.push('/dashboard')
-      return 'success'
-    } catch (e) {
-      console.log('error occurred', e)
-      return e.message
+  const signup = async (email, password, confirmPassword, userType, cityCode, fullName) => {
+
+    if(email && password && confirmPassword && userType && cityCode){
+      try {
+
+        if(password == confirmPassword){
+          const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password)
+          const user = userCredential.user
+
+          console.log("Created user with firebase auth")
+    
+          axios.get(`https://communify-api.protosystems.net/v1/createUser?name=${fullName}&uid=${user.uid}&cityCode=${cityCode}&email=${user.email}&userType=${userType}`)
+          .then(res => {
+
+            const persons = res.data;
+            console.log(res.data)
+    
+            console.log(res.data['status'])
+    
+            if(res.data.status == 'success'){
+              setError('')
+              router.push('/dashboard')
+            } else {
+              setError("Error: " + res.data.message)
+              console.log("Something went wrong")
+            }
+    
+    
+          })
+        } else {
+          setError('Password and repeat password do not match')
+        }
+  
+      } catch (e) {
+        console.log('error occurred', e)
+      }
+    } else {
+      setError("Fields cannot be left blank")
     }
+
   }
 
   const logout = async () => {
