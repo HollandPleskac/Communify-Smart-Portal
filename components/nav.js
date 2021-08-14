@@ -12,7 +12,8 @@ const Navigation = (props) => {
   return (
     <div className='h-screen flex flex-col' >
       <TopBar />
-      <div className='flex h-full ' >
+      <div className='flex h-full min-h-0' >
+        {/* need min-h-0 here for layouts, overflow-hidden is a substitute as well */}
         <SideBar />
         <PageContent content={props.children} />
       </div>
