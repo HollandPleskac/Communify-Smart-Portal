@@ -9,6 +9,7 @@ const AuthContext = React.createContext({
   error: '',
   loading: true,
   login: async (email, password) => { },
+  signup: async (email, password) => { },
   logout: async () => { },
 })
 
@@ -37,6 +38,18 @@ export const AuthContextProvider = (props) => {
     }
   }
 
+  const signup = async (email, password) => {
+    try {
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password)
+      const user = userCredential.user
+      router.push('/dashboard')
+      return 'success'
+    } catch (e) {
+      console.log('error occurred', e)
+      return e.message
+    }
+  }
+
   const logout = async () => {
     await firebase.auth().signOut()
   }
@@ -47,6 +60,7 @@ export const AuthContextProvider = (props) => {
       error,
       loading,
       login,
+      signup,
       logout
     }}>
     {props.children}
