@@ -18,9 +18,9 @@ const Dashboard = () => {
     <Navigation>
       <div className="flex-grow flex flex-col flex-column items-top m-6 ">
         <GoalList />
-        <div className="flex-grow flex bg-red-400">
+        <div className="flex-grow flex">
           <PopularProjects />
-          <PopularProjects />
+          <UpcomingEvents />
         </div>
       </div>
     </Navigation>
@@ -36,7 +36,7 @@ const GoalList = () => {
           City of Stockton, California
         </p>
       </div>
-      <p className="mt-4">Current Goals</p>
+      <p className="mt-4 text-sm">Current Goals</p>
       <div className="flex-shrink flex mt-2">
         <Goal
           name="Improving Parks"
@@ -80,10 +80,11 @@ const Goal: React.FC<{
 }> = (props) => {
   return (
     <div
-      className={`p-6 w-1/5 flex flex-col justify-top items-center bg-communify-black rounded-3xl ${props.margin}`}
+      className={`p-6 flex flex-col justify-top items-center bg-communify-black rounded-3xl ${props.margin}`}
+      style={{ width: 240 }}
     >
       <div className="relative">
-        <Image src={graphImg} alt="Graph" height="150" width="150" />
+        <Image src={graphImg} alt="Graph" height="120" width="120" />
         <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-semibold text-center">
           {props.complete}
           <br />
@@ -107,10 +108,18 @@ const Goal: React.FC<{
 
 const PopularProjects = () => {
   return (
-    <div>
-      <p className="mt-4 w-full bg-blue-400 border-2 border-green-400">
-        Current Popular Projects
-      </p>
+    <div className="flex-grow">
+      <p className="mt-4 w-full text-sm">Current Popular Projects</p>
+      <div className="mt-4">Coming Soon...</div>
+    </div>
+  )
+}
+
+const UpcomingEvents = () => {
+  return (
+    <div className="flex-grow">
+      <p className="mt-4 w-full text-sm">Upcoming Events</p>
+      <div className="mt-4">Coming Soon...</div>
     </div>
   )
 }
