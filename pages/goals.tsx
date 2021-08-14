@@ -16,9 +16,16 @@ const Goals = () => {
           <GoalList />
         </div>
         <div className='w-3/12 flex flex-col '>
-          <Image src={goalsGraph} alt='Goals Graph' height={450} />
+          <div>
+            {/* replace with real chart */}
+            <Image src={goalsGraph} alt='Goals Graph' />
+          </div>
           <p className='text-sm mt-6'>Recently Completed Goals</p>
           <div className='mt-4 flex-grow overflow-auto'>
+            <RecentlyCompletedGoal
+              name='Improve Parking at Mall'
+              estFinish='2022'
+            />
             <RecentlyCompletedGoal
               name='Improve Parking at Mall'
               estFinish='2022'
