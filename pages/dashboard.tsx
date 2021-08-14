@@ -37,7 +37,14 @@ const GoalList = () => {
         </p>
       </div>
       <p className="mt-4 text-sm">Current Goals</p>
-      <div className="flex-shrink flex mt-2">
+      <div className="flex mt-2">
+        <Goal
+          name="Improving Parks"
+          started="6/7/2021"
+          finish="2022"
+          complete="35%"
+          margin="mr-4"
+        />
         <Goal
           name="Improving Parks"
           started="6/7/2021"
