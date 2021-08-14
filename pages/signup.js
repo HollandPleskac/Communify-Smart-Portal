@@ -4,6 +4,8 @@ import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 
+import axios from 'axios';
+
 const Signup = () => {
   const router = useRouter()
 
@@ -48,7 +50,15 @@ const Button = (props) => {
   const router = useRouter()
 
   const btnHandler = () => {
-    router.push('/dashboard')
+    console.log("Hello sign up clicked")
+
+    axios.get(`https://communify-api.protosystems.net/v1/createUser?`)
+    .then(res => {
+      const persons = res.data;
+      console.log(res.data)
+    })
+
+    //router.push('/dashboard')
   }
 
   return (
