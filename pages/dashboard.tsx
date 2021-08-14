@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   return (
     <Navigation>
-      <div className="w-mainContent flex flex-col p-6 overflow-hidden">
+      <div className="flex flex-col p-6 overflow-hidden">
         {/* <div className="flex mt-2 mb-2 overflow-x-scroll">
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>

@@ -17,8 +17,8 @@ module.exports = {
         'communify-black': '#333244',
         'text-light': '#9F9F9F',
       },
-      height: {
-        mainContent: 'calc(100vw-192px)'
+      width: {
+        mainContent: 'calc(100vw - 192px)'
       }
     }
   },
