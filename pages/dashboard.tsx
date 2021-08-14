@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   return (
     <Navigation>
-      <div className="relative flex flex-col m-6 overflow-x-hidden">
+      <div className="w-mainContent flex flex-col p-6 overflow-hidden">
         {/* <div className="flex mt-2 mb-2 overflow-x-scroll">
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>
@@ -41,7 +41,7 @@ const GoalList = () => {
         </p>
       </div>
       <p className="mt-4 text-sm">Current Goals</p>
-      <div className="flex mt-2 overflow-x-hidden">
+      <div className="flex mt-2 overflow-auto">
         <Goal
           name="Improving Parks"
           started="6/7/2021"
@@ -56,7 +56,6 @@ const GoalList = () => {
           complete="35%"
           margin="mr-4"
         />
-
         <Goal
           name="Improving Parks"
           started="6/7/2021"
@@ -93,7 +92,7 @@ const Goal: React.FC<{
   return (
     <div
       className={`p-6 flex flex-col justify-top items-center bg-communify-black rounded-3xl ${props.margin}`}
-      style={{ width: 240 }}
+      style={{ width: 240, minWidth: 240 }}
     >
       <div className="relative">
         <Image src={graphImg} alt="Graph" height="120" width="120" />

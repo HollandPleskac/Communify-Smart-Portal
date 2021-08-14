@@ -63,7 +63,7 @@ const Profile = () => {
 
 const SideBar = () => {
   return (
-    <div className='bg-communify-black flex flex-col justify-between' style={{ width: 192 }} >
+    <div className='bg-communify-black flex flex-col justify-between' style={{ width: 192, minWidth: 192 }} >
       <div className='mt-5' >
         <SidebarLink name='Dashboard' href='/dashboard' icon={faCity} />
         <SidebarLink name='Goals' href='/goals' icon={faBullseye} />

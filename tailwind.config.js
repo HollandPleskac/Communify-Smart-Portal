@@ -18,7 +18,7 @@ module.exports = {
         'text-light': '#9F9F9F',
       },
       height: {
-        mainContent: 'calc(100vh-100px)'
+        mainContent: 'calc(100vw-192px)'
       }
     }
   },
