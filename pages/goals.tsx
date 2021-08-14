@@ -6,7 +6,7 @@ const Goals = () => {
   return (
     <Navigation>
       <div className="flex w-full min-w-0">
-        <div className="w-9/12 bg-red-100">
+        <div className="w-9/12 bg-red-10f0">
           <div className="flex items-end overflow-x-auto">
             <h1 className="font-semibold text-lg mr-12 whitespace-nowrap	">
               Current Goals

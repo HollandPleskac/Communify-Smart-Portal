@@ -12,7 +12,7 @@ const Navigation = (props) => {
   return (
     <div className='h-screen flex flex-col' >
       <TopBar />
-      <div className='flex flex-grow ' >
+      <div className='flex h-full ' >
         <SideBar />
         <PageContent content={props.children} />
       </div>
