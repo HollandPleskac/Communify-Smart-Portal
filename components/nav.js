@@ -23,7 +23,7 @@ const Navigation = (props) => {
 const TopBar = () => {
   return (
     <div className='flex items-center bg-communify-green  ' >
-      <div className='w-48 py-6 flex justify-center items-center border-background-gray' style={{ borderTop: 'none', borderLeft: 'none', borderWidth: '0.5px' }} >
+      <div className=' py-6 flex justify-center items-center border-background-gray' style={{ width: 192, borderTop: 'none', borderLeft: 'none', borderWidth: '0.5px' }} >
         <FontAwesomeIcon icon={faCity} className='text-white text-xl' />
         <h1 className='ml-3 text-white font-semibold text-lg' >Communify</h1>
       </div>
@@ -63,7 +63,7 @@ const Profile = () => {
 
 const SideBar = () => {
   return (
-    <div className='bg-communify-black w-48 flex flex-col justify-between' >
+    <div className='bg-communify-black flex flex-col justify-between' style={{ width: 192 }} >
       <div className='mt-5' >
         <SidebarLink name='Dashboard' href='/dashboard' icon={faCity} />
         <SidebarLink name='Goals' href='/goals' icon={faBullseye} />

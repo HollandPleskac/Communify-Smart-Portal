@@ -10,13 +10,17 @@ import { faChartPie } from "@fortawesome/free-solid-svg-icons"
 const Dashboard = () => {
   const authCtx = useContext(AuthContext)
 
-  const getVal = () => {
-    console.log(authCtx.error)
-  }
-
   return (
     <Navigation>
-      <div className="flex-grow flex flex-col flex-column items-top m-6 ">
+      <div className="relative flex flex-col m-6 overflow-x-hidden">
+        {/* <div className="flex mt-2 mb-2 overflow-x-scroll">
+          <h1>testtesttestesttesttesttestesttesttesttestest</h1>
+          <h1>testtesttestesttesttesttestesttesttesttestest</h1>
+          <h1>testtesttestesttesttesttestesttesttesttestest</h1>
+          <h1>testtesttestesttesttesttestesttesttesttestest</h1>
+          <h1>testtesttestesttesttesttestesttesttesttestest</h1>
+          <h1>testtesttestesttesttesttestesttesttesttestest</h1>
+        </div> */}
         <GoalList />
         <div className="flex-grow flex">
           <PopularProjects />
@@ -37,7 +41,7 @@ const GoalList = () => {
         </p>
       </div>
       <p className="mt-4 text-sm">Current Goals</p>
-      <div className="flex mt-2">
+      <div className="flex mt-2 overflow-x-hidden">
         <Goal
           name="Improving Parks"
           started="6/7/2021"
@@ -52,6 +56,7 @@ const GoalList = () => {
           complete="35%"
           margin="mr-4"
         />
+
         <Goal
           name="Improving Parks"
           started="6/7/2021"
