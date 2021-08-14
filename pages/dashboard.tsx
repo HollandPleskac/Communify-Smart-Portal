@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   return (
     <Navigation>
-      <div className="flex flex-col p-6 w-full min-w-0">
+      <div className="flex flex-col pl-6 pt-6 pr-12 pb-6 w-full min-w-0">
         {/* <div className="flex mt-2 mb-2 overflow-x-scroll">
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>
@@ -33,15 +33,21 @@ const Dashboard = () => {
 
 const GoalList = () => {
   return (
-    <div className="w-full min-w-0 bg-green-400 flex flex-col">
+    <div className="w-full min-w-0 flex flex-col">
       <div className="flex items-end">
         <h1 className=" text-2xl font-semibold">Dashboard</h1>
         <p className="ml-4 text-communify-green">
           City of Stockton, California
         </p>
       </div>
-      <p className="mt-4 text-sm">Current Goals</p>
-      <div className="w-full min-w-0 bg-red-400 flex mt-2 overflow-auto">
+      <div className="mt-6 text-sm flex justify-between">
+        <p>Current Goals</p>
+        <p className="cursor-pointer font-semibold text-communify-green">
+          View All
+        </p>
+      </div>
+      <div className="w-full min-w-0 flex mt-2 overflow-auto">
+        {/* only get 5 goals */}
         <Goal
           name="Improving Parks"
           started="6/7/2021"
@@ -62,7 +68,7 @@ const GoalList = () => {
           finish="2022"
           complete="35%"
           margin="mr-4"
-        />{' '}
+        />
         <Goal
           name="Improving Parks"
           started="6/7/2021"
@@ -91,7 +97,7 @@ const Goal: React.FC<{
 }> = (props) => {
   return (
     <div
-      className={`p-6 flex flex-col justify-top items-center bg-communify-black rounded-3xl ${props.margin}`}
+      className={`px-6 py-6 w-full flex flex-col justify-top items-center bg-communify-black rounded-3xl ${props.margin}`}
     >
       <div className="relative">
         <Image src={graphImg} alt="Graph" height="120" width="120" />
@@ -119,7 +125,7 @@ const Goal: React.FC<{
 const PopularProjects = () => {
   return (
     <div className="flex-grow">
-      <p className="mt-4 w-full text-sm">Current Popular Projects</p>
+      <p className="mt-6 w-full text-sm">Current Popular Projects</p>
       <div className="mt-4">Coming Soon...</div>
     </div>
   )
@@ -128,7 +134,7 @@ const PopularProjects = () => {
 const UpcomingEvents = () => {
   return (
     <div className="flex-grow">
-      <p className="mt-4 w-full text-sm">Upcoming Events</p>
+      <p className="mt-6 w-full text-sm">Upcoming Events</p>
       <div className="mt-4">Coming Soon...</div>
     </div>
   )

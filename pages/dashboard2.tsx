@@ -23,7 +23,7 @@ const Dashboard2 = () => {
 
 const Comp = () => {
   return (
-    <div className="p-4 border-2 border-gray-200 ">
+    <div className="p-6 border-2 border-gray-200 ">
       <p className="whitespace-nowrap">testing22 test2 test3</p>
     </div>
   )
