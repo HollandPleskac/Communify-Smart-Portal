@@ -13,53 +13,10 @@ import 'firebase/auth'
 
 const Goals = () => {
 
-
-
-  return (
-    <Navigation>
-      <div className='p-6 w-full flex gap-x-5 bg-background-gray'>
-        <div className='w-9/12 flex flex-col'>
-          <Title />
-          <GoalList /> 
-        </div>
-        <div className='w-3/12 flex flex-col '>
-          <div>
-            {/* replace with real chart */}
-            <Image src={goalsGraph} alt='Goals Graph' />
-          </div>
-          <p className='text-sm mt-6'>Recently Completed Goals</p>
-          <div className='mt-4 flex-grow overflow-auto'>
-            <RecentlyCompletedGoal
-              name='Improve Parking at Mall'
-              estFinish='2022'
-            />
-
-          </div>
-        </div>
-      </div>
-    </Navigation>
-  )
-}
-
-const Title = () => {
-  return (
-    <div className='flex justify-between'>
-      <div className='flex items-end'>
-        <h1 className='text-2xl font-semibold'>Dashboard</h1>
-        <p className='ml-4 text-communify-green'>
-          City of Stockton, California
-        </p>
-      </div>
-      <button className='text-sm px-3 py-2 rounded-lg text-white bg-communify-green hover:bg-communify-green-alt focus:bg-communify-green-alt'>
-        Propose Goal
-      </button>
-    </div>
-  )
-}
-
-const GoalList = () => {
   // [read, write(use the function)] = useState(type of data)
   const [goals, setGoals] = useState([])
+  const [cityName, setCityName] = useState('')
+  const [completedGoals, setCompletedGoals] = useState([])
 
   // Have to use useEffect for fetching data and for subscriptions
   useEffect(() => {
@@ -92,7 +49,20 @@ const GoalList = () => {
 
         console.log('got goals')
         console.log('res', res.data)
-        
+
+
+        // Gets finished goals
+
+        let finishedGoalsTemp = []
+
+        // Filters list to take out pending
+
+        for(let i = 0; i <= res.data.message.length - 1; i++){
+          if(res.data.message[i]['currentStatus'] == 'completed'){
+            finishedGoalsTemp.push(res.data.message[i])
+          }
+        }
+
 
         // Filters list to take out pending
 
@@ -104,6 +74,8 @@ const GoalList = () => {
 
         // set data into useState
         setGoals(res.data.message)
+        setCityName('Mountain House')
+        setCompletedGoals(finishedGoalsTemp)
       } else {
         console.log("Error fetching user from API")
       }
@@ -124,9 +96,52 @@ const GoalList = () => {
   ])
 
   return (
+    <Navigation>
+      <div className='p-6 w-full flex gap-x-5 bg-background-gray'>
+        <div className='w-9/12 flex flex-col'>
+          <Title cityName = {cityName}/>
+          <GoalList goals = {goals}/> 
+        </div>
+        <div className='w-3/12 flex flex-col '>
+          <div>
+            {/* replace with real chart */}
+            <Image src={goalsGraph} alt='Goals Graph' />
+          </div>
+          <p className='text-sm mt-6'>Recently Completed Goals</p>
+          <div className='mt-4 flex-grow overflow-auto'>
+            <RecentlyCompletedGoals
+              completedGoals = {completedGoals}
+            />
+
+          </div>
+        </div>
+      </div>
+    </Navigation>
+  )
+}
+
+const Title:React.FC<{cityName: string}> = (props) => {
+  return (
+    <div className='flex justify-between'>
+      <div className='flex items-end'>
+        <h1 className='text-2xl font-semibold'>Dashboard</h1>
+        <p className='ml-4 text-communify-green'>
+          City of {props.cityName}, California
+        </p>
+      </div>
+      <button className='text-sm px-3 py-2 rounded-lg text-white bg-communify-green hover:bg-communify-green-alt focus:bg-communify-green-alt'>
+        Propose Goal
+      </button>
+    </div>
+  )
+}
+
+const GoalList:React.FC<{goals: any}> = (props ) => {
+
+  return (
     <div className='h-full flex flex-col mt-2 overflow-auto'>
       {/* map, have the specify the key */}
-      {goals.map((goal, index) => (
+      {props.goals.map((goal, index) => (
         <Goal
           key={index}
           name={goal.goalName}
@@ -159,19 +174,33 @@ const Goal: React.FC<{ name: string; estFinish: string; status: string}> = (prop
   )
 }
 
-const RecentlyCompletedGoal: React.FC<{ name: string; estFinish: string }> = (
-  props
-) => {
+
+const RecentlyCompletedGoals:React.FC<{completedGoals: any}> = (props ) => {
+
   return (
-    <div className='bg-white rounded-lg px-6 py-4 mt-3 flex justify-between items-center'>
-      <div>
-        <h1 className='font-semibold mb-1'>{props.name}</h1>
-        <h2 className='text-sm'>Est Finish: {props.estFinish}</h2>
+    <div className='h-full flex flex-col mt-2 overflow-auto'>
+      {/* map, have the specify the key */}
+      {props.completedGoals.map((goal, index) => (
+
+        <div className='bg-white rounded-lg px-6 py-4 mt-3 flex justify-between items-center'>
+        <div>
+          <h1 className='font-bold mb-1'>{goal.goalName}</h1>
+          <h2 className='text-sm'>Est Finish: {goal.estimatedFinish}</h2>
+        </div>
+        <FontAwesomeIcon
+          icon={faCheckCircle}
+          className='text-3xl text-communify-green'
+        />
       </div>
-      <FontAwesomeIcon
-        icon={faCheckCircle}
-        className='text-3xl text-communify-green'
-      />
+      ))}
+      
+
+
+      {/* <Goal name='Promote Carpooling' estFinish='July 2022' />
+      <Goal name='Promote Carpooling' estFinish='July 2022' />
+      <Goal name='Promote Carpooling' estFinish='July 2022' />
+      <Goal name='Promote Carpooling' estFinish='July 2022' />
+      <Goal name='Promote Carpooling' estFinish='July 2022' /> */}
     </div>
   )
 }
