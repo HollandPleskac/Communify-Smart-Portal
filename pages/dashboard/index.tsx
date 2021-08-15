@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import Navigation from '../../components/nav'
 import AuthContext from '../../context/authContext'
 import Image from 'next/image'
-import graphImg from '../public/graph.png'
+import graphImg from '../../public/graph.png'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChartPie } from '@fortawesome/free-solid-svg-icons'
