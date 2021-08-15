@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Navigation from '../components/nav'
 import AuthContext from '../context/authContext'
 import Image from 'next/image'
 import goalsGraph from '../public/goals-graph.png'
+import axios from 'axios'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
@@ -70,14 +71,50 @@ const Title = () => {
 }
 
 const GoalList = () => {
+  // [read, write(use the function)] = useState(type of data)
+  const [goals, setGoals] = useState([])
+
+  // Have to use useEffect for fetching data and for subscriptions
+  useEffect(() => {
+    const getGoals = async () => {
+      console.log('got goals')
+      const cityCode = 981776
+      //fetch data
+      const res = await axios.get(
+        `https://communify-api.protosystems.net/v1/getGoals?limit=none&cityCode=${cityCode}`
+      )
+      console.log('res', res.data.message)
+      // set data into useState
+      setGoals(res.data.message)
+    }
+
+    // async await so I used a separate function
+    getGoals()
+
+    // cancel subscriptions in the return fn
+    //  return () => {}
+  }, [
+    // rerender the useEffect fn
+    // nothing here = it only runs once at the beginning,
+    // if you put something here = it runs when that value changes
+  ])
+
   return (
     <div className='h-full flex flex-col mt-2 overflow-auto'>
+      {/* map, have the specify the key */}
+      {goals.map((goal, index) => (
+        <Goal
+          key={index}
+          name={goal.goalName}
+          estFinish={goal.estimatedFinish}
+        />
+      ))}
+
+      {/* <Goal name='Promote Carpooling' estFinish='July 2022' />
       <Goal name='Promote Carpooling' estFinish='July 2022' />
       <Goal name='Promote Carpooling' estFinish='July 2022' />
       <Goal name='Promote Carpooling' estFinish='July 2022' />
-      <Goal name='Promote Carpooling' estFinish='July 2022' />
-      <Goal name='Promote Carpooling' estFinish='July 2022' />
-      <Goal name='Promote Carpooling' estFinish='July 2022' />
+      <Goal name='Promote Carpooling' estFinish='July 2022' /> */}
     </div>
   )
 }
