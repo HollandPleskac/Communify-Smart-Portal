@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import Navigation from '../components/nav'
 import AuthContext from '../context/authContext'
 import Image from 'next/image'
@@ -6,8 +6,14 @@ import goalsGraph from '../public/goals-graph.png'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios'
 
 const Goals = () => {
+
+
+
+
+
   return (
     <Navigation>
       <div className='p-6 w-full flex gap-x-5 bg-background-gray'>
@@ -70,6 +76,14 @@ const Title = () => {
 }
 
 const GoalList = () => {
+
+  useEffect(() => {
+    const getGoals = () => {
+
+      
+
+    }
+  })
   return (
     <div className='h-full flex flex-col mt-2 overflow-auto'>
       <Goal name='Promote Carpooling' estFinish='July 2022' />
