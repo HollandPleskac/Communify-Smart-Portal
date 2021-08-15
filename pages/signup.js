@@ -4,7 +4,6 @@ import { useRouter } from 'next/router'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import { resolveProjectReferencePath } from 'typescript'
 
 const Signup = () => {
   const authCtx = useContext(AuthContext)
