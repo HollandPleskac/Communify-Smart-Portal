@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
-import Navigation from '../components/nav'
-import AuthContext from '../context/authContext'
+import Navigation from '../../components/nav'
+import AuthContext from '../../context/authContext'
 import Image from 'next/image'
 import graphImg from '../public/graph.png'
 
@@ -135,9 +135,7 @@ const UpcomingEvents = () => {
   return (
     <div className='flex-grow w-1/2 flex flex-col overflow-auto'>
       <p className='mt-6 w-full text-sm'>Upcoming Events</p>
-      <div className='mt-4 flex-grow overflow-auto'>
-        Coming Soon...
-      </div>
+      <div className='mt-4 flex-grow overflow-auto'>Coming Soon...</div>
     </div>
   )
 }
