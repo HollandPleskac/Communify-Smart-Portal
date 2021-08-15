@@ -12,10 +12,11 @@ const Navigation = (props) => {
   return (
     <div className='h-screen flex flex-col' >
       <TopBar />
-      <div className='flex h-full overflow-hidden' >
+      <div className='flex h-full min-h-0' >
         {/* need min-h-0 here for layouts, overflow-hidden is a substitute as well */}
-        {/* default is min-h-auto - this means that flex items can't be larger than flex content ... well if you only have one flex item, if that expands than the content has to expand as well */}
-        {/* setting min-h-0 fixes that, also it only applies on overflow so overflow-hidden fixes that too (same applies for min-width) */}
+        {/* default is min-h-auto - this means that flex items can't be larger than flex content ... well if your flex item expands, then the content has to expand as well */}
+        {/* setting min-h-0 fixes that, also min-h-auto only applies on overflow so overflow-hidden fixes that too (same applies for min-width) */}
+        {/* https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size */}
         <SideBar />
         <PageContent content={props.children} />
       </div>

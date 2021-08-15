@@ -22,7 +22,7 @@ const Dashboard = () => {
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>
         </div> */}
         <GoalList />
-        <div className='flex-grow flex'>
+        <div className='flex-grow flex min-h-0'>
           <PopularProjects />
           <UpcomingEvents />
         </div>
@@ -124,18 +124,20 @@ const Goal: React.FC<{
 
 const PopularProjects = () => {
   return (
-    <div className='flex-grow'>
+    <div className='flex-grow w-1/2 flex flex-col overflow-auto '>
       <p className='mt-6 w-full text-sm'>Current Popular Projects</p>
-      <div className='mt-4'>Coming Soon...</div>
+      <div className='mt-4 flex-grow overflow-auto'>Coming Soon...</div>
     </div>
   )
 }
 
 const UpcomingEvents = () => {
   return (
-    <div className='flex-grow'>
+    <div className='flex-grow w-1/2 flex flex-col overflow-auto'>
       <p className='mt-6 w-full text-sm'>Upcoming Events</p>
-      <div className='mt-4'>Coming Soon...</div>
+      <div className='mt-4 flex-grow overflow-auto'>
+        Coming Soon...
+      </div>
     </div>
   )
 }
