@@ -17,6 +17,7 @@ const Goals = () => {
   const [goals, setGoals] = useState([])
   const [cityName, setCityName] = useState('')
   const [completedGoals, setCompletedGoals] = useState([])
+  const [goalStats, setGoalStats] = useState({})
 
   // Have to use useEffect for fetching data and for subscriptions
   useEffect(() => {
@@ -54,8 +55,16 @@ const Goals = () => {
         // Gets finished goals
 
         let finishedGoalsTemp = []
+        let inProgresGoals = []
 
         // Filters list to take out pending
+
+        let completedGoalsCount = 0
+        let inPendingGoalsCount = 0
+        let totalGoalCount = 0
+
+
+        totalGoalCount = res.data.message.length
 
         for(let i = 0; i <= res.data.message.length - 1; i++){
           if(res.data.message[i]['currentStatus'] == 'completed'){
@@ -63,19 +72,26 @@ const Goals = () => {
           }
         }
 
+        completedGoalsCount = finishedGoalsTemp.length
+
 
         // Filters list to take out pending
 
         for(let i = 0; i <= res.data.message.length - 1; i++){
-          if(res.data.message[i]['currentStatus'] == 'pending'){
-            res.data.message.splice(i, i)
+          if(res.data.message[i]['currentStatus'] == 'inProgress' || res.data.message[i]['currentStatus'] == 'pending'){
+            inProgresGoals.push(res.data.message[i])
           }
         }
 
+        inPendingGoalsCount = inProgresGoals.length
+
         // set data into useState
-        setGoals(res.data.message)
+        setGoals(inProgresGoals)
         setCityName('Mountain House')
         setCompletedGoals(finishedGoalsTemp)
+        setGoalStats({pending: inPendingGoalsCount, completed: completedGoalsCount, total: totalGoalCount})
+
+        console.log({pending: inPendingGoalsCount, completed: completedGoalsCount, total: totalGoalCount})
       } else {
         console.log("Error fetching user from API")
       }
@@ -193,7 +209,7 @@ const RecentlyCompletedGoals:React.FC<{completedGoals: any}> = (props ) => {
         />
       </div>
       ))}
-      
+
 
 
       {/* <Goal name='Promote Carpooling' estFinish='July 2022' />
