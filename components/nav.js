@@ -12,8 +12,10 @@ const Navigation = (props) => {
   return (
     <div className='h-screen flex flex-col' >
       <TopBar />
-      <div className='flex h-full min-h-0' >
+      <div className='flex h-full overflow-hidden' >
         {/* need min-h-0 here for layouts, overflow-hidden is a substitute as well */}
+        {/* default is min-h-auto - this means that flex items can't be larger than flex content ... well if you only have one flex item, if that expands than the content has to expand as well */}
+        {/* setting min-h-0 fixes that, also it only applies on overflow so overflow-hidden fixes that too (same applies for min-width) */}
         <SideBar />
         <PageContent content={props.children} />
       </div>
