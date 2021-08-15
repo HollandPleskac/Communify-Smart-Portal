@@ -157,12 +157,13 @@ const GoalList:React.FC<{goals: any}> = (props ) => {
   return (
     <div className='h-full flex flex-col mt-2 overflow-auto'>
       {/* map, have the specify the key */}
-      {props.goals.map((goal, index) => (
+      {
+      props.goals.map((goal, index) => (
         <Goal
           key={index}
           name={goal.goalName}
           estFinish={goal.estimatedFinish}
-          status={(goal.currentStatus == 'inProgress') ? 'In Progress': goal.currentStatus}
+          status={(goal.currentStatus == 'inProgress') ? 'In Progress' : ((goal.currentStatus == 'pending') ? "Pending Approval": goal.currentStatus)}
         />
       ))}
 
