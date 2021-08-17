@@ -25,10 +25,9 @@ const Goals = () => {
 
         const user = firebase.auth().currentUser
 
-        //console.log(user.email)
+        console.log(user)
 
-        var email = user.email
-
+        var email = 'test@gmail.com'
         const userRes = await axios.get(
           `https://communify-api.protosystems.net/v1/getUser?email=${email}`
         )
