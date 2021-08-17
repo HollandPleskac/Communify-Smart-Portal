@@ -28,6 +28,8 @@ export const AuthContextProvider = (props) => {
     })
   }, [])
 
+
+
   const login = async (email, password) => {
     try {
       const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password)
@@ -92,7 +94,7 @@ export const AuthContextProvider = (props) => {
       loading,
       login,
       signup,
-      logout
+      logout,
     }}>
     {props.children}
   </AuthContext.Provider>
