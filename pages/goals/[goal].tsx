@@ -165,7 +165,7 @@ const GoalProgress = () => {
       <div className='relative mx-auto mt-2'>
         {/* <Image src={graphImg} alt='graph' /> */}
         <div className='w-44'>
-          <DoughnutChart cutout='78%' />
+          <DoughnutChart cutout='78%' dataList={[12, 12]} />
         </div>
 
         <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-lg text-center '>
