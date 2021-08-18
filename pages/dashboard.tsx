@@ -15,11 +15,13 @@ export async function getStaticProps() {
     'https://communify-api.protosystems.net/v1/getGoals?limit=5&cityCode=981776'
   )
   let goals = await res.data.message
+  goals = goals.map((goal) => {
+    return new GoalModel(goal.goalName, goal.dateCreated, goal.estimatedFinish)
+  })
   console.log('goals', goals)
-  console.log('type of', typeof goals)
 
-  // By returning { props: { posts } }, the Blog component
-  // will receive `posts` as a prop at build time
+  goals = JSON.parse(JSON.stringify(goals)) // necessary to pass data through getStaticProps with a custom object (https://github.com/vercel/next.js/issues/11993 answer by jeromemeichelbeck)
+
   return {
     props: {
       goals,
@@ -27,7 +29,7 @@ export async function getStaticProps() {
   }
 }
 
-const Dashboard: React.FC<{ goals: GoalModel[] }> = () => {
+const Dashboard: React.FC<{ goals: GoalModel[] }> = (props) => {
   const authCtx = useContext(AuthContext)
 
   return (
