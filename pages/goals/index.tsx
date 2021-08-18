@@ -7,14 +7,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import DoughnutChart from '../../components/doughnut-chart'
-
+import Link from 'next/link'
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import next from 'next'
 
 const Goals = () => {
   // [read, write(use the function)] = useState(type of data)
   const [goals, setGoals] = useState([])
-  const [cityName, setCityName] = useState('')
+  const [cityName, setCityName] = useState('Loading')
+  const [stateName, setStateName] = useState('Loading')
   const [completedGoals, setCompletedGoals] = useState([])
   const [goalStats, setGoalStats] = useState({})
 
@@ -28,7 +30,9 @@ const Goals = () => {
 
         console.log(user)
 
-        var email = 'test@gmail.com'
+        var email = user.email
+
+
         const userRes = await axios.get(
           `https://communify-api.protosystems.net/v1/getUser?email=${email}`
         )
@@ -38,6 +42,13 @@ const Goals = () => {
         if (userRes.data.status == 'success') {
           const cityCode = userRes.data.message.city
           //fetch data
+
+          const resCityName = await axios.get(
+            `https://communify-api.protosystems.net/v1/getCityData?cityCode=${cityCode}`
+          )
+
+          console.log(resCityName.data)
+  
 
           console.log(cityCode)
           const res = await axios.get(
@@ -83,7 +94,8 @@ const Goals = () => {
 
           // set data into useState
           setGoals(inProgresGoals)
-          setCityName('Mountain House')
+          setCityName(resCityName.data.message.city)
+          setStateName(resCityName.data.message.state)
           setCompletedGoals(finishedGoalsTemp)
           setGoalStats({
             pending: inPendingGoalsCount,
@@ -118,7 +130,7 @@ const Goals = () => {
     <Navigation>
       <div className='p-6 w-full flex gap-x-5 bg-background-gray'>
         <div className='w-9/12 flex flex-col'>
-          <Title cityName={cityName} />
+          <Title cityName={cityName} stateName={stateName}/>
           <GoalList goals={goals} />
         </div>
         <div className='w-3/12 flex flex-col '>
@@ -145,13 +157,13 @@ const Goals = () => {
   )
 }
 
-const Title: React.FC<{ cityName: string }> = (props) => {
+const Title: React.FC<{ cityName: string; stateName: string }> = (props) => {
   return (
     <div className='flex justify-between'>
       <div className='flex items-end'>
         <h1 className='text-2xl font-semibold'>Dashboard</h1>
         <p className='ml-4 text-communify-green'>
-          City of {props.cityName}, California
+          City of {props.cityName}, {props.stateName}
         </p>
       </div>
       <button className='text-sm px-3 py-2 rounded-lg text-white bg-communify-green hover:bg-communify-green-alt focus:bg-communify-green-alt'>
@@ -177,6 +189,7 @@ const GoalList: React.FC<{ goals: any }> = (props) => {
               ? 'Pending Approval'
               : goal.currentStatus
           }
+          goalID={goal.goalID}
         />
       ))}
 
@@ -228,20 +241,23 @@ const GoalChart: React.FC<{
 }
 
 
-const Goal: React.FC<{ name: string; estFinish: string; status: string }> = (
+const Goal: React.FC<{ name: string; estFinish: string; status: string; goalID: string }> = (
   props
 ) => {
   return (
-    <div className='relative mt-4 p-4 flex bg-white rounded-lg w-full '>
-      <div className='h-full w-2 rounded-full mr-4 ml-1 bg-communify-black'></div>
-      <div className='flex flex-col py-2'>
-        <h1 className='text-lg font-semibold text-communify-black'>
-          {props.name}
-        </h1>
-        <h2 className='ml-1 text-sm mt-1'>Est Finish: {props.estFinish}</h2>
+    <Link href = {`/goals/${props.goalID}`}>
+        <div className='relative mt-4 p-4 flex bg-white rounded-lg w-full cursor-pointer'>
+        <div className='h-full w-2 rounded-full mr-4 ml-1 bg-communify-black'></div>
+        <div className='flex flex-col py-2'>
+          <h1 className='text-lg font-semibold text-communify-black'>
+            {props.name}
+          </h1>
+          <h2 className='ml-1 text-sm mt-1'>Est Finish: {props.estFinish}</h2>
+        </div>
+        <p className='absolute top-2 right-4'>{props.status}</p>
       </div>
-      <p className='absolute top-2 right-4'>{props.status}</p>
-    </div>
+    </Link>
+    
   )
 }
 
