@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 
 import Navigation from '../components/nav'
 
 const ProposeEvent = () => {
+  const [name, setName] = useState<string>('')
+  const [date, setDate] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
+
   return (
     <Navigation>
       <div className='flex flex-col w-full p-6'>
@@ -15,16 +19,21 @@ const ProposeEvent = () => {
               labelName='Event Name'
               id='event-name'
               marginTop='mt-6'
+              value={name}
+              setValue={setName}
             />
             <InputGroup
               labelName='Event Date'
               id='event-date'
               marginTop='mt-5'
+              value={date}
+              setValue={setDate}
             />
             <LargeInput
               labelName='Event Description'
               id='event-description'
               marginTop='mt-5'
+              value={description}
             />
             <Buttons />
           </div>
@@ -38,7 +47,15 @@ const InputGroup: React.FC<{
   labelName: string
   marginTop: string
   id: string
+  value: string
+  setValue: (val: string) => void
 }> = (props) => {
+  const changeHandler = (e: React.FormEvent) => {
+    console.log(e.target.value)
+    console.log(e.target)
+    props.setValue(e.target.value)
+  }
+
   return (
     <div className={`w-full px-8 flex flex-col ${props.marginTop}`}>
       <label
@@ -48,6 +65,8 @@ const InputGroup: React.FC<{
         {props.labelName}
       </label>
       <input
+        value={props.value}
+        onChange={changeHandler}
         type='text'
         id={props.id}
         className='px-4 py-2 rounded-lg w-full focus:outline-none text-communify-black'
@@ -60,6 +79,7 @@ const LargeInput: React.FC<{
   labelName: string
   marginTop: string
   id: string
+  value: string
 }> = (props) => {
   return (
     <div className={`w-full px-8 mt-8 flex flex-col h-full ${props.marginTop}`}>
@@ -70,6 +90,7 @@ const LargeInput: React.FC<{
         {props.labelName}
       </label>
       <textarea
+        value={props.value}
         id={props.id}
         className='h-full px-4 py-2 rounded-lg w-full focus:outline-none text-communify-black resize-none'
       ></textarea>

@@ -3,6 +3,7 @@ import Navigation from '../../components/nav'
 import AuthContext from '../../context/authContext'
 import Image from 'next/image'
 import graphImg from '../../public/graph.png'
+import DoughnutChart from '../../components/doughnut-chart'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChartPie } from '@fortawesome/free-solid-svg-icons'
@@ -100,7 +101,8 @@ const Goal: React.FC<{
       className={`px-6 py-6 w-full flex flex-col justify-top items-center bg-communify-black rounded-3xl ${props.margin}`}
     >
       <div className='relative'>
-        <Image src={graphImg} alt='Graph' height='120' width='120' />
+        {/* <Image src={graphImg} alt='Graph' height='120' width='120' /> */}
+        <DoughnutChart />
         <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-semibold text-center'>
           {props.complete}
           <br />
