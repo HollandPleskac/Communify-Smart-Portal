@@ -12,7 +12,7 @@ const DoughnutChart: React.FC<{ cutout: string, dataList: number[] }> = (props) 
     datasets: [
       {
         // label: '# of Votes',
-        data: [12, 19],
+        data: props.dataList,
         backgroundColor: ['#17A9A8', '#006766'],
         borderColor: ['#17A9A8', '#006766'],
         borderWidth: 1,
