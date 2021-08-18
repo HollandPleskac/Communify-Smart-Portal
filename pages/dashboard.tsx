@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react'
-import Navigation from '../../components/nav'
-import AuthContext from '../../context/authContext'
+import Navigation from '../components/nav'
+import AuthContext from '../context/authContext'
 import Image from 'next/image'
-import graphImg from '../../public/graph.png'
-import DoughnutChart from '../../components/doughnut-chart'
+import graphImg from '../public/graph.png'
+import DoughnutChart from '../components/doughnut-chart'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChartPie } from '@fortawesome/free-solid-svg-icons'
