@@ -50,7 +50,7 @@ const InputGroup: React.FC<{
   value: string
   setValue: (val: string) => void
 }> = (props) => {
-  const changeHandler = (e: React.FormEvent) => {
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value)
     console.log(e.target)
     props.setValue(e.target.value)

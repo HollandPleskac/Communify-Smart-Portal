@@ -178,7 +178,7 @@ const GoalProgress = () => {
           Projects Completed
         </div>
         <div className='flex items-center justify-center'>
-          <div className='rounded-full w-4 h-4 bg-communify-green-alt mr-1'></div>
+          <div className='rounded-full w-4 h-4 bg-communify-chart-green-alt mr-1'></div>
           Projects Remaining
         </div>
       </div>
