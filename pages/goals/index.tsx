@@ -6,6 +6,7 @@ import goalsGraph from '../../public/goals-graph.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
+import DoughnutChart from '../../components/doughnut-chart'
 
 import firebase from 'firebase/app'
 import 'firebase/auth'
@@ -123,6 +124,15 @@ const Goals = () => {
         <div className='w-3/12 flex flex-col '>
           <div>
             {/* replace with real chart */}
+
+            <GoalChart
+          name='Improving Parks'
+          started='6/7/2021'
+          finish='2022'
+          complete='35%'
+          margin='mr-4'
+        />
+
             <Image src={goalsGraph} alt='Goals Graph' />
           </div>
           <p className='text-sm mt-6'>Recently Completed Goals</p>
@@ -178,6 +188,45 @@ const GoalList: React.FC<{ goals: any }> = (props) => {
     </div>
   )
 }
+
+const GoalChart: React.FC<{
+  name: string
+  started: string
+  finish: string
+  complete: string
+  margin: string
+}> = (props) => {
+  return (
+    <div
+      className={`px-6 py-6 w-full flex flex-col justify-top items-center bg-communify-black rounded-3xl ${props.margin}`}
+    >
+      <div className='relative'>
+        {/* <Image src={graphImg} alt='Graph' height='120' width='120' /> */}
+
+        <div className='w-36'>
+          <DoughnutChart cutout='78%' />
+        </div>
+        <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-semibold text-center'>
+          {props.complete}
+          <br />
+          Complete
+        </p>
+      </div>
+      <h2 className='text-semibold text-lg mt-2 text-communify-green whitespace-nowrap'>
+        {props.name}
+      </h2>
+      <p className='text-white whitespace-nowrap '>
+        <span className='font-semibold text-sm'>Started:</span>
+        <span className='text-sm'> {props.started}</span>
+      </p>
+      <p className='text-white whitespace-nowrap'>
+        <span className='font-semibold text-sm'>Estimated Finish:</span>
+        <span className='text-sm'> {props.finish}</span>
+      </p>
+    </div>
+  )
+}
+
 
 const Goal: React.FC<{ name: string; estFinish: string; status: string }> = (
   props
