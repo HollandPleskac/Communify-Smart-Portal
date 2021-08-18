@@ -4,11 +4,30 @@ import AuthContext from '../context/authContext'
 import Image from 'next/image'
 import graphImg from '../public/graph.png'
 import DoughnutChart from '../components/doughnut-chart'
+import GoalModel from '../models/goal-model'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChartPie } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios'
 
-const Dashboard = () => {
+export async function getStaticProps() {
+  const res = await axios.get(
+    'https://communify-api.protosystems.net/v1/getGoals?limit=5&cityCode=981776'
+  )
+  let goals = await res.data.message
+  console.log('goals', goals)
+  console.log('type of', typeof goals)
+
+  // By returning { props: { posts } }, the Blog component
+  // will receive `posts` as a prop at build time
+  return {
+    props: {
+      goals,
+    },
+  }
+}
+
+const Dashboard: React.FC<{ goals: GoalModel[] }> = () => {
   const authCtx = useContext(AuthContext)
 
   return (
@@ -103,8 +122,8 @@ const Goal: React.FC<{
       <div className='relative'>
         {/* <Image src={graphImg} alt='Graph' height='120' width='120' /> */}
 
-        <div className='w-36'>
-          <DoughnutChart cutout='78%' />
+        <div className='w-36 mx-5'>
+          <DoughnutChart cutout='78%' dataList={[12, 12]} />
         </div>
         <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-semibold text-center'>
           {props.complete}

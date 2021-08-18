@@ -6,7 +6,7 @@ import { Doughnut, defaults } from 'react-chartjs-2'
 
 defaults.animation = false
 
-const DoughnutChart: React.FC<{ cutout: string }> = (props) => {
+const DoughnutChart: React.FC<{ cutout: string, dataList: number[] }> = (props) => {
   const data = {
     labels: [],
     datasets: [

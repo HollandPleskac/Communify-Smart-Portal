@@ -204,7 +204,7 @@ const GoalChart: React.FC<{
         {/* <Image src={graphImg} alt='Graph' height='120' width='120' /> */}
 
         <div className='w-36'>
-          <DoughnutChart cutout='78%' />
+          <DoughnutChart cutout='78%' dataList={[19,12]} />
         </div>
         <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-semibold text-center'>
           {props.complete}
