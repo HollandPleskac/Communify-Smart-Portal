@@ -38,7 +38,7 @@ const Goals = () => {
 
   const [recentUpdates, setRecentUpdates] = useState([])
   const [goalName, setGoalName] = useState('Loading')
-
+  const [projectGraphStatus, setProjectGraphStatus] = useState([0,0])
 
   // Backend
 
@@ -89,8 +89,20 @@ const Goals = () => {
 
           let projectsTemp = []
 
+          let completedProjects = 0
+
+          let totalProjects = 0
+
 
           for(let i = 0; i <= projectsForGoal.length - 1; i++){
+
+            if(projectsForGoal[i]['applicationStatus'] == 'accepted'){
+              totalProjects++
+            }
+
+              if(projectsForGoal[i]['applicationStatus'] == 'accepted' && projectsForGoal[i]['currentStatus'] == 'completed'){
+                completedProjects++
+              }
               projectsTemp.push(
 
                 /*
@@ -141,6 +153,7 @@ upvotes: 0
           }
 
           setProjects(projectsTemp)
+          setProjectGraphStatus([completedProjects, totalProjects]) // IMPORTANT REMINDER: Pending projects are not factored into graph totals
 
           
 
@@ -244,7 +257,7 @@ upvotes: 0
           </div>
         </div>
         <div className='flex flex-col w-4/12'>
-          <GoalProgress />
+          <GoalProgress projectGraphStatus = {projectGraphStatus}/>
           <p className='text-sm mt-4 mb-2'>Recent Updates</p>
           <div className='flex-grow overflow-y-auto'>
             <RecentUpdate
@@ -336,14 +349,14 @@ const ProjectProposal: React.FC<{
   )
 }
 
-const GoalProgress = () => {
+const GoalProgress:React.FC<{ projectGraphStatus: any;}> = (props) => {
   return (
     <div className='flex flex-col bg-communify-black rounded-2xl p-6'>
       <p className='font-semibold text-communify-green'>Goal Progress</p>
       <div className='relative mx-auto mt-2'>
         {/* <Image src={graphImg} alt='graph' /> */}
         <div className='w-44'>
-          <DoughnutChart cutout='78%' dataList={[12, 100]} />
+          <DoughnutChart cutout='78%' dataList={props.projectGraphStatus} />
         </div>
 
         <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-lg text-center '>
