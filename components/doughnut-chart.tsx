@@ -6,20 +6,26 @@ import { Doughnut, defaults } from 'react-chartjs-2'
 
 defaults.animation = false
 
-const data = {
-  labels: [],
-  datasets: [
-    {
-      // label: '# of Votes',
-      data: [12, 19],
-      backgroundColor: ['#17A9A8', '#006766'],
-      borderColor: ['#17A9A8', '#006766'],
-      borderWidth: 1,
-      cutout: '76%',
-    },
-  ],
-}
+const DoughnutChart: React.FC<{ cutout: string }> = (props) => {
+  const data = {
+    labels: [],
+    datasets: [
+      {
+        // label: '# of Votes',
+        data: [12, 19],
+        backgroundColor: ['#17A9A8', '#006766'],
+        borderColor: ['#17A9A8', '#006766'],
+        borderWidth: 1,
+        cutout: props.cutout,
+      },
+    ],
+  }
 
-const DoughnutChart = () => <Doughnut data={data} />
+  return (
+    <>
+      <Doughnut data={data} />
+    </>
+  )
+}
 
 export default DoughnutChart

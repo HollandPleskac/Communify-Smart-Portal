@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Navigation from '../../components/nav'
 import Image from 'next/image'
 import graphImg from '../../public/graph.png'
+import DoughnutChart from '../../components/doughnut-chart'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
@@ -162,7 +163,11 @@ const GoalProgress = () => {
     <div className='flex flex-col bg-communify-black rounded-2xl p-6'>
       <p className='font-semibold text-communify-green'>Goal Progress</p>
       <div className='relative mx-auto mt-2'>
-        <Image src={graphImg} alt='graph' />
+        {/* <Image src={graphImg} alt='graph' /> */}
+        <div className='w-44'>
+          <DoughnutChart cutout='78%' />
+        </div>
+
         <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-lg text-center '>
           35% Complete
         </p>
