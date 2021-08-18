@@ -20,12 +20,6 @@ const data = {
   ],
 }
 
-const DoughnutChart = () => (
-  <>
-    <div className='w-36'>
-      <Doughnut data={data} />
-    </div>
-  </>
-)
+const DoughnutChart = () => <Doughnut data={data} />
 
 export default DoughnutChart
