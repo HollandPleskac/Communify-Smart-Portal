@@ -32,7 +32,7 @@ const Goals = () => {
 
         console.log(user)
 
-        var email = 'test@gmail.com'
+        var email = user.email
 
         user.getIdToken().then(async function (token) {
           const userRes = await axios.get(
@@ -176,9 +176,13 @@ const Title: React.FC<{ cityName: string; stateName: string }> = (props) => {
           City of {props.cityName}, {props.stateName}
         </p>
       </div>
+
+      <Link href="/propose-goal">
       <button className='text-sm px-3 py-2 rounded-lg text-white bg-communify-green hover:bg-communify-green-alt focus:bg-communify-green-alt'>
         Propose Goal
       </button>
+      </Link>
+
     </div>
   )
 }

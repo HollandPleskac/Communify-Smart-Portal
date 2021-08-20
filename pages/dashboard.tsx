@@ -5,60 +5,109 @@ import Image from 'next/image'
 import graphImg from '../public/graph.png'
 import DoughnutChart from '../components/doughnut-chart'
 import GoalModel from '../models/goal-model'
-
+import firebase from 'firebase/app'
+import 'firebase/auth'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChartPie } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import Goals from './goals'
+import Link from 'next/link'
 
-export async function getStaticProps() {
-  let returnGoals: GoalModel[]
-  try {
-    const res = await axios.get(
-      'https://communify-api.protosystems.net/v1/getGoals?limit=5&cityCode=981776'
-    )
-    let goals = await res.data.message
-    console.log('RAW GOALS', goals)
-
-    goals = goals.map((goal) => {
-      let completedProjects = 0
-      let totalProjects = 0
-      for (let i = 0; i < goal.projects.length; i++) {
-        if (goal.projects[i].applicationStatus == 'accepted') {
-          totalProjects++
-        }
-
-        if (
-          goal.projects[i].applicationStatus == 'accepted' &&
-          goal.projects[i].currentStatus == 'completed'
-        ) {
-          completedProjects++
-        }
-      }
-      return new GoalModel(
-        goal.goalName,
-        goal.dateCreated,
-        goal.estimatedFinish,
-        completedProjects,
-        totalProjects - completedProjects
-      )
-    })
-    console.log('goals', goals)
-
-    returnGoals = JSON.parse(JSON.stringify(goals)) // necessary to pass data through getStaticProps with a custom object (https://github.com/vercel/next.js/issues/11993 answer by jeromemeichelbeck)
-  } catch (e) {
-    console.log('error occurred', e)
-  }
-
-  return {
-    props: {
-      goals: returnGoals,
-    },
-  }
-}
-
-const Dashboard: React.FC<{ goals: GoalModel[] }> = (props) => {
+const Dashboard = () => {
   const authCtx = useContext(AuthContext)
+
+  const [goalsList, setGoalsList] = useState([])
+  const [cityName, setCityName] = useState('Loading')
+  const [stateName, setStateName] = useState('Loading')
+
+    // Have to use useEffect for fetching data and for subscriptions
+    useEffect(
+      () => {
+        const getGoals = async () => {
+          //Gets the citycode the user is registered with
+
+          let goalsListTemp = []
+
+          try {
+            const user = firebase.auth().currentUser
+            var email = user.email
+        
+            user.getIdToken().then(async function (token) {
+              const userRes = await axios.get(
+                `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
+              )
+        
+              if(userRes.data.status == 'success'){
+        
+                const cityCode = userRes.data.userData.city
+        
+                const res = await axios.get(
+                  `https://communify-api.protosystems.net/v1/getGoals?limit=5&cityCode=${cityCode}`
+                )
+                let goals = await res.data.message
+                console.log('RAW GOALS', goals)
+            
+                goals = goals.map((goal) => {
+                  let completedProjects = 0
+                  let totalProjects = 0
+                  for (let i = 0; i < goal.projects.length; i++) {
+                    if (goal.projects[i].applicationStatus == 'accepted') {
+                      totalProjects++
+                    }
+            
+                    if (
+                      goal.projects[i].applicationStatus == 'accepted' &&
+                      goal.projects[i].currentStatus == 'completed'
+                    ) {
+                      completedProjects++
+                    }
+                  }
+
+                  if(totalProjects == 0){
+                    totalProjects = 1
+                  }
+
+                  goalsListTemp.push(new GoalModel(
+                    goal.goalName,
+                    goal.dateCreated,
+                    goal.estimatedFinish,
+                    completedProjects,
+                    totalProjects - completedProjects
+                  ))
+
+
+                })
+
+                setGoalsList(goalsListTemp)
+
+                setCityName(userRes.data.cityData.city)
+                setStateName(userRes.data.cityData.state)
+                
+                console.log('goals', goals)
+                } 
+        
+            })
+        
+          } catch (e) {
+            console.log('error occurred', e)
+          }
+  
+  
+        }
+  
+        // async await so I used a separate function
+        getGoals()
+  
+        // cancel subscriptions in the return fn
+        //  return () => {}
+      },
+      [
+        // rerender the useEffect fn
+        // nothing here = it only runs once at the beginning,
+        // if you put something here = it runs when that value changes
+      ]
+    )
+
 
   return (
     <Navigation>
@@ -71,7 +120,7 @@ const Dashboard: React.FC<{ goals: GoalModel[] }> = (props) => {
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>
         </div> */}
-        <GoalList goals={props.goals} />
+        <GoalList goals={goalsList} cityName={cityName} state={stateName} />
         <div className='flex-grow flex min-h-0'>
           <PopularProjects />
           <UpcomingEvents />
@@ -81,19 +130,19 @@ const Dashboard: React.FC<{ goals: GoalModel[] }> = (props) => {
   )
 }
 
-const GoalList: React.FC<{ goals: GoalModel[] }> = (props) => {
+const GoalList: React.FC<{ goals: GoalModel[]; cityName: string; state: string }> = (props) => {
   return (
     <div className='w-full min-w-0 flex flex-col'>
       <div className='flex items-end'>
         <h1 className=' text-2xl font-semibold'>Dashboard</h1>
         <p className='ml-4 text-communify-green'>
-          City of Stockton, California
+          City of {props.cityName}, {props.state}
         </p>
       </div>
       <div className='mt-6 text-sm flex justify-between'>
         <p>Current Goals</p>
         <p className='cursor-pointer font-semibold text-communify-green'>
-          View All
+          <Link href="/goals">View All</Link>
         </p>
       </div>
       <div className='w-full min-w-0 flex mt-2 overflow-auto'>
