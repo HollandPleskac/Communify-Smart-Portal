@@ -32,25 +32,20 @@ const Goals = () => {
 
         var email = user.email
 
-
+        user.getIdToken().then(async function(token){
+          
         const userRes = await axios.get(
-          `https://communify-api.protosystems.net/v1/getUser?email=${email}`
+          `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
         )
 
         console.log(userRes.data)
 
         if (userRes.data.status == 'success') {
-          const cityCode = userRes.data.message.city
-          //fetch data
-
-          const resCityName = await axios.get(
-            `https://communify-api.protosystems.net/v1/getCityData?cityCode=${cityCode}`
-          )
-
-          console.log(resCityName.data)
+          const cityCode = userRes.data.userData.city
   
 
           console.log(cityCode)
+
           const res = await axios.get(
             `https://communify-api.protosystems.net/v1/getGoals?limit=none&cityCode=${cityCode}`
           )
@@ -94,8 +89,8 @@ const Goals = () => {
 
           // set data into useState
           setGoals(inProgresGoals)
-          setCityName(resCityName.data.message.city)
-          setStateName(resCityName.data.message.state)
+          setCityName(userRes.data.message.cityData.city)
+          setStateName(userRes.data.message.cityData.state)
           setCompletedGoals(finishedGoalsTemp)
           setGoalStats({
             pending: inPendingGoalsCount,
@@ -111,6 +106,9 @@ const Goals = () => {
         } else {
           console.log('Error fetching user from API')
         }
+      });
+
+
       }
 
       // async await so I used a separate function
