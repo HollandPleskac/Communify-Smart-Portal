@@ -30,62 +30,58 @@ const Goals = () => {
 
         console.log(user)
 
-        var email = user.email
+        var email = 'test@gmail.com'
 
-        user.getIdToken().then(async function(token){
-
-          console.log(token)
-          
-        const userRes = await axios.get(
-          `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
-        )
-
-        console.log(userRes.data)
-
-        if (userRes.data.status == 'success') {
-          const cityCode = userRes.data.userData.city
-  
-
-          console.log(cityCode)
-
-          const res = await axios.get(
-            `https://communify-api.protosystems.net/v1/getGoals?limit=none&cityCode=${cityCode}`
+        user.getIdToken().then(async function (token) {
+          const userRes = await axios.get(
+            `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
           )
 
-          console.log('got goals')
-          console.log('res', res.data)
+          console.log(userRes.data)
 
-          // Gets finished goals
+          if (userRes.data.status == 'success') {
+            const cityCode = userRes.data.userData.city
 
-          let finishedGoalsTemp = []
-          let inProgresGoals = []
+            console.log(cityCode)
 
-          // Filters list to take out pending
+            const res = await axios.get(
+              `https://communify-api.protosystems.net/v1/getGoals?limit=none&cityCode=${cityCode}`
+            )
 
-          let completedGoalsCount = 0
-          let inPendingGoalsCount = 0
-          let totalGoalCount = 0
+            console.log('got goals')
+            console.log('res', res.data)
 
-          totalGoalCount = res.data.message.length
+            // Gets finished goals
 
-          for (let i = 0; i <= res.data.message.length - 1; i++) {
-            if (res.data.message[i]['currentStatus'] == 'completed') {
-              finishedGoalsTemp.push(res.data.message[i])
+            let finishedGoalsTemp = []
+            let inProgresGoals = []
+
+            // Filters list to take out pending
+
+            let completedGoalsCount = 0
+            let inPendingGoalsCount = 0
+            let totalGoalCount = 0
+
+            totalGoalCount = res.data.message.length
+
+            for (let i = 0; i <= res.data.message.length - 1; i++) {
+              if (res.data.message[i]['currentStatus'] == 'completed') {
+                finishedGoalsTemp.push(res.data.message[i])
+              }
             }
-          }
 
-          completedGoalsCount = finishedGoalsTemp.length
+            completedGoalsCount = finishedGoalsTemp.length
 
-          // Filters list to take out pending
+            // Filters list to take out pending
 
-          for (let i = 0; i <= res.data.message.length - 1; i++) {
-            if (
-              res.data.message[i]['currentStatus'] == 'inProgress' ||
-              res.data.message[i]['currentStatus'] == 'pending'
-            ) {
-              inProgresGoals.push(res.data.message[i])
+            for (let i = 0; i <= res.data.message.length - 1; i++) {
+              if (
+                res.data.message[i]['currentStatus'] == 'inProgress' ||
+                res.data.message[i]['currentStatus'] == 'pending'
+              ) {
+                inProgresGoals.push(res.data.message[i])
+              }
             }
-          }
 
           inPendingGoalsCount = inProgresGoals.length
 
@@ -129,22 +125,16 @@ const Goals = () => {
     <Navigation>
       <div className='p-6 w-full flex gap-x-5 bg-background-gray'>
         <div className='w-9/12 flex flex-col'>
-          <Title cityName={cityName} stateName={stateName}/>
+          <Title cityName={cityName} stateName={stateName} />
           <GoalList goals={goals} />
         </div>
         <div className='w-3/12 flex flex-col '>
           <div>
             {/* replace with real chart */}
 
-            <GoalChart
-          name='Improving Parks'
-          started='6/7/2021'
-          finish='2022'
-          complete='35%'
-          margin='mr-4'
-        />
+            <GoalChart complete={11} remaining={11} />
 
-            <Image src={goalsGraph} alt='Goals Graph' />
+            {/* <Image src={goalsGraph} alt='Goals Graph' /> */}
           </div>
           <p className='text-sm mt-6'>Recently Completed Goals</p>
           <div className='mt-4 flex-grow overflow-auto'>
@@ -201,51 +191,81 @@ const GoalList: React.FC<{ goals: any }> = (props) => {
   )
 }
 
-const GoalChart: React.FC<{
-  name: string
-  started: string
-  finish: string
-  complete: string
-  margin: string
-}> = (props) => {
+const GoalChart: React.FC<{ remaining: number; complete: number }> = (
+  props
+) => {
   return (
-    <div
-      className={`px-6 py-6 w-full flex flex-col justify-top items-center bg-communify-black rounded-3xl ${props.margin}`}
-    >
-      <div className='relative'>
-        {/* <Image src={graphImg} alt='Graph' height='120' width='120' /> */}
-
-        <div className='w-36'>
-          <DoughnutChart cutout='78%' dataList={[19,12]} />
+    <div className='bg-communify-black flex justify-evenly py-6 px-2 rounded-3xl'>
+      <div className='flex flex-col'>
+        <h2 className='text-communify-green text-semibold'>Overall Progress</h2>
+        <div className='h-full flex flex-col justify-center'>
+          <GoalChartHeading value={props.remaining} title='Goals Remaining' />
+          <GoalChartHeading value={props.complete} title='Goals Completed' />
+          <GoalChartHeading
+            value={props.remaining + props.complete}
+            title='Goals Total'
+          />
         </div>
-        <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-semibold text-center'>
-          {props.complete}
-          <br />
-          Complete
-        </p>
       </div>
-      <h2 className='text-semibold text-lg mt-2 text-communify-green whitespace-nowrap'>
-        {props.name}
-      </h2>
-      <p className='text-white whitespace-nowrap '>
-        <span className='font-semibold text-sm'>Started:</span>
-        <span className='text-sm'> {props.started}</span>
-      </p>
-      <p className='text-white whitespace-nowrap'>
-        <span className='font-semibold text-sm'>Estimated Finish:</span>
-        <span className='text-sm'> {props.finish}</span>
-      </p>
+      <div>
+        <div className='relative'>
+          {/* <Image src={graphImg} alt='Graph' height='120' width='120' /> */}
+
+          <div className='w-36'>
+            <DoughnutChart
+              cutout='78%'
+              dataList={[props.remaining, props.complete]}
+            />
+          </div>
+          <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-semibold text-center'>
+            {(props.complete / (props.remaining + props.complete)) * 100}
+            <br />
+            Complete
+          </p>
+        </div>
+        <div className='flex flex-col'>
+          <GoalChartKey name='Goals Remainging' color='bg-communify-green' />
+          <GoalChartKey
+            name='Goals Completed'
+            color='bg-communify-chart-green-alt'
+          />
+        </div>
+      </div>
     </div>
   )
 }
 
-
-const Goal: React.FC<{ name: string; estFinish: string; status: string; goalID: string }> = (
+const GoalChartHeading: React.FC<{ value: number; title: string }> = (
   props
 ) => {
   return (
-    <Link href = {`/goals/${props.goalID}`}>
-        <div className='relative mt-4 p-4 flex bg-white rounded-lg w-full cursor-pointer'>
+    <>
+      <div className='text-white text-center mt-2'>
+        <h3 className='text-xl font-semibold mb-1'>{props.value}</h3>
+        <p className='text-xs'>{props.title}</p>
+      </div>
+    </>
+  )
+}
+
+const GoalChartKey: React.FC<{ name: string; color: string }> = (props) => {
+  return (
+    <div className='flex items-center mt-3'>
+      <div className={`rounded-full w-4 h-4 mr-2 ${props.color}`}></div>
+      <p className='text-sm text-white'>{props.name}</p>
+    </div>
+  )
+}
+
+const Goal: React.FC<{
+  name: string
+  estFinish: string
+  status: string
+  goalID: string
+}> = (props) => {
+  return (
+    <Link href={`/goals/${props.goalID}`}>
+      <div className='relative mt-4 p-4 flex bg-white rounded-lg w-full cursor-pointer'>
         <div className='h-full w-2 rounded-full mr-4 ml-1 bg-communify-black'></div>
         <div className='flex flex-col py-2'>
           <h1 className='text-lg font-semibold text-communify-black'>
@@ -256,7 +276,6 @@ const Goal: React.FC<{ name: string; estFinish: string; status: string; goalID: 
         <p className='absolute top-2 right-4'>{props.status}</p>
       </div>
     </Link>
-    
   )
 }
 
