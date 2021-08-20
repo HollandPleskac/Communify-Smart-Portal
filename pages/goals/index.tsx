@@ -108,7 +108,6 @@ const Goals = () => {
         }
       });
 
-
       }
 
       // async await so I used a separate function
