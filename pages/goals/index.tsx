@@ -32,79 +32,80 @@ const Goals = () => {
 
         var email = 'test@gmail.com'
 
-        // user.getIdToken().then(async function (token) {
-        //   const userRes = await axios.get(
-        //     `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
-        //   )
+        user.getIdToken().then(async function (token) {
+          const userRes = await axios.get(
+            `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
+          )
 
-        //   console.log(userRes.data)
+          console.log(userRes.data)
 
-        //   if (userRes.data.status == 'success') {
-        //     const cityCode = userRes.data.userData.city
+          if (userRes.data.status == 'success') {
+            const cityCode = userRes.data.userData.city
 
-        //     console.log(cityCode)
+            console.log(cityCode)
 
-        //     const res = await axios.get(
-        //       `https://communify-api.protosystems.net/v1/getGoals?limit=none&cityCode=${cityCode}`
-        //     )
+            const res = await axios.get(
+              `https://communify-api.protosystems.net/v1/getGoals?limit=none&cityCode=${cityCode}`
+            )
 
-        //     console.log('got goals')
-        //     console.log('res', res.data)
+            console.log('got goals')
+            console.log('res', res.data)
 
-        //     // Gets finished goals
+            // Gets finished goals
 
-        //     let finishedGoalsTemp = []
-        //     let inProgresGoals = []
+            let finishedGoalsTemp = []
+            let inProgresGoals = []
 
-        //     // Filters list to take out pending
+            // Filters list to take out pending
 
-        //     let completedGoalsCount = 0
-        //     let inPendingGoalsCount = 0
-        //     let totalGoalCount = 0
+            let completedGoalsCount = 0
+            let inPendingGoalsCount = 0
+            let totalGoalCount = 0
 
-        //     totalGoalCount = res.data.message.length
+            totalGoalCount = res.data.message.length
 
-        //     for (let i = 0; i <= res.data.message.length - 1; i++) {
-        //       if (res.data.message[i]['currentStatus'] == 'completed') {
-        //         finishedGoalsTemp.push(res.data.message[i])
-        //       }
-        //     }
+            for (let i = 0; i <= res.data.message.length - 1; i++) {
+              if (res.data.message[i]['currentStatus'] == 'completed') {
+                finishedGoalsTemp.push(res.data.message[i])
+              }
+            }
 
-        //     completedGoalsCount = finishedGoalsTemp.length
+            completedGoalsCount = finishedGoalsTemp.length
 
-        //     // Filters list to take out pending
+            // Filters list to take out pending
 
-        //     for (let i = 0; i <= res.data.message.length - 1; i++) {
-        //       if (
-        //         res.data.message[i]['currentStatus'] == 'inProgress' ||
-        //         res.data.message[i]['currentStatus'] == 'pending'
-        //       ) {
-        //         inProgresGoals.push(res.data.message[i])
-        //       }
-        //     }
+            for (let i = 0; i <= res.data.message.length - 1; i++) {
+              if (
+                res.data.message[i]['currentStatus'] == 'inProgress' ||
+                res.data.message[i]['currentStatus'] == 'pending'
+              ) {
+                inProgresGoals.push(res.data.message[i])
+              }
+            }
 
-        //     inPendingGoalsCount = inProgresGoals.length
+          inPendingGoalsCount = inProgresGoals.length
 
-        //     // set data into useState
-        //     setGoals(inProgresGoals)
-        //     setCityName(userRes.data.message.cityData.city)
-        //     setStateName(userRes.data.message.cityData.state)
-        //     setCompletedGoals(finishedGoalsTemp)
-        //     setGoalStats({
-        //       pending: inPendingGoalsCount,
-        //       completed: completedGoalsCount,
-        //       total: totalGoalCount,
-        //     })
+          // set data into useState
+          setGoals(inProgresGoals)
+          setCityName(userRes.data.cityData.city)
+          setStateName(userRes.data.cityData.state)
+          setCompletedGoals(finishedGoalsTemp)
+          setGoalStats({
+            pending: inPendingGoalsCount,
+            completed: completedGoalsCount,
+            total: totalGoalCount,
+          })
 
-        //     console.log({
-        //       pending: inPendingGoalsCount,
-        //       completed: completedGoalsCount,
-        //       total: totalGoalCount,
-        //     })
-        //   } else {
-        //     console.log('Error fetching user from API')
-        //   }
-        // })
+          console.log({
+            pending: inPendingGoalsCount,
+            completed: completedGoalsCount,
+            total: totalGoalCount,
+          })
+        } else {
+          console.log("Error fetching user from API: " +  userRes.data.message)
+        }
+      });
+
       }
 
       // async await so I used a separate function
