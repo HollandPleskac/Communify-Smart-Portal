@@ -9,6 +9,7 @@ import GoalModel from '../models/goal-model'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChartPie } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
+import Goals from './goals'
 
 export async function getStaticProps() {
   const res = await axios.get(
@@ -43,7 +44,7 @@ const Dashboard: React.FC<{ goals: GoalModel[] }> = (props) => {
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>
           <h1>testtesttestesttesttesttestesttesttesttestest</h1>
         </div> */}
-        <GoalList />
+        <GoalList goals={props.goals} />
         <div className='flex-grow flex min-h-0'>
           <PopularProjects />
           <UpcomingEvents />
@@ -53,7 +54,7 @@ const Dashboard: React.FC<{ goals: GoalModel[] }> = (props) => {
   )
 }
 
-const GoalList = () => {
+const GoalList: React.FC<{ goals: GoalModel[] }> = (props) => {
   return (
     <div className='w-full min-w-0 flex flex-col'>
       <div className='flex items-end'>
@@ -70,41 +71,18 @@ const GoalList = () => {
       </div>
       <div className='w-full min-w-0 flex mt-2 overflow-auto'>
         {/* only get 5 goals */}
-        <Goal
-          name='Improving Parks'
-          started='6/7/2021'
-          finish='2022'
-          complete='35%'
-          margin='mr-4'
-        />
-        <Goal
-          name='Improving Parks'
-          started='6/7/2021'
-          finish='2022'
-          complete='35%'
-          margin='mr-4'
-        />
-        <Goal
-          name='Improving Parks'
-          started='6/7/2021'
-          finish='2022'
-          complete='35%'
-          margin='mr-4'
-        />
-        <Goal
-          name='Improving Parks'
-          started='6/7/2021'
-          finish='2022'
-          complete='35%'
-          margin='mr-4'
-        />
-        <Goal
-          name='Improving Parks'
-          started='6/7/2021'
-          finish='2022'
-          complete='35%'
-          margin=''
-        />
+        {props.goals.map((goal, index) => {
+          return (
+            <Goal
+              key={index}
+              name={goal.name}
+              started={goal.startDate}
+              finish={goal.estimatedFinishDate}
+              complete='35%'
+              margin={index === 4 ? '' : 'mr-4'}
+            />
+          )
+        })}
       </div>
     </div>
   )
