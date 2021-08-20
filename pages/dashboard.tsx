@@ -12,20 +12,47 @@ import axios from 'axios'
 import Goals from './goals'
 
 export async function getStaticProps() {
-  const res = await axios.get(
-    'https://communify-api.protosystems.net/v1/getGoals?limit=5&cityCode=981776'
-  )
-  let goals = await res.data.message
-  goals = goals.map((goal) => {
-    return new GoalModel(goal.goalName, goal.dateCreated, goal.estimatedFinish)
-  })
-  console.log('goals', goals)
+  let returnGoals: GoalModel[]
+  try {
+    const res = await axios.get(
+      'https://communify-api.protosystems.net/v1/getGoals?limit=5&cityCode=981776'
+    )
+    let goals = await res.data.message
+    console.log('RAW GOALS', goals)
 
-  goals = JSON.parse(JSON.stringify(goals)) // necessary to pass data through getStaticProps with a custom object (https://github.com/vercel/next.js/issues/11993 answer by jeromemeichelbeck)
+    goals = goals.map((goal) => {
+      let completedProjects = 0
+      let totalProjects = 0
+      for (let i = 0; i < goal.projects.length; i++) {
+        if (goal.projects[i].applicationStatus == 'accepted') {
+          totalProjects++
+        }
+
+        if (
+          goal.projects[i].applicationStatus == 'accepted' &&
+          goal.projects[i].currentStatus == 'completed'
+        ) {
+          completedProjects++
+        }
+      }
+      return new GoalModel(
+        goal.goalName,
+        goal.dateCreated,
+        goal.estimatedFinish,
+        completedProjects,
+        totalProjects - completedProjects
+      )
+    })
+    console.log('goals', goals)
+
+    returnGoals = JSON.parse(JSON.stringify(goals)) // necessary to pass data through getStaticProps with a custom object (https://github.com/vercel/next.js/issues/11993 answer by jeromemeichelbeck)
+  } catch (e) {
+    console.log('error occurred', e)
+  }
 
   return {
     props: {
-      goals,
+      goals: returnGoals,
     },
   }
 }
@@ -78,8 +105,13 @@ const GoalList: React.FC<{ goals: GoalModel[] }> = (props) => {
               name={goal.name}
               started={goal.startDate}
               finish={goal.estimatedFinishDate}
-              complete='35%'
+              complete={`${
+                goal.completedProjects / goal.unFinishedProjects +
+                  goal.completedProjects * 100 || 0
+              }%`}
               margin={index === 4 ? '' : 'mr-4'}
+              completedProjects={goal.completedProjects}
+              unFinishedProjects={goal.unFinishedProjects}
             />
           )
         })}
@@ -94,6 +126,8 @@ const Goal: React.FC<{
   finish: string
   complete: string
   margin: string
+  completedProjects: number
+  unFinishedProjects: number
 }> = (props) => {
   return (
     <div
@@ -103,7 +137,10 @@ const Goal: React.FC<{
         {/* <Image src={graphImg} alt='Graph' height='120' width='120' /> */}
 
         <div className='w-36 mx-5'>
-          <DoughnutChart cutout='78%' dataList={[12, 12]} />
+          <DoughnutChart
+            cutout='78%'
+            dataList={[props.completedProjects, props.unFinishedProjects]}
+          />
         </div>
         <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-semibold text-center'>
           {props.complete}
