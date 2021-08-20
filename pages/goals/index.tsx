@@ -89,8 +89,8 @@ const Goals = () => {
 
           // set data into useState
           setGoals(inProgresGoals)
-          setCityName(userRes.data.message.cityData.city)
-          setStateName(userRes.data.message.cityData.state)
+          setCityName(userRes.data.cityData.city)
+          setStateName(userRes.data.cityData.state)
           setCompletedGoals(finishedGoalsTemp)
           setGoalStats({
             pending: inPendingGoalsCount,
@@ -104,7 +104,7 @@ const Goals = () => {
             total: totalGoalCount,
           })
         } else {
-          console.log('Error fetching user from API')
+          console.log("Error fetching user from API: " +  userRes.data.message)
         }
       });
 
