@@ -33,6 +33,8 @@ const Goals = () => {
         var email = user.email
 
         user.getIdToken().then(async function(token){
+
+          console.log(token)
           
         const userRes = await axios.get(
           `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
