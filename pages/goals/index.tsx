@@ -17,6 +17,8 @@ const Goals = () => {
   const [goals, setGoals] = useState([])
   const [cityName, setCityName] = useState('Loading')
   const [stateName, setStateName] = useState('Loading')
+  const [remainingGoalsCount, setRemainingGoalsCount] = useState(0)
+  const [completedGoalsCount, setCompletedGoalsCount] = useState(0)
   const [completedGoals, setCompletedGoals] = useState([])
   const [goalStats, setGoalStats] = useState({})
 
@@ -62,6 +64,8 @@ const Goals = () => {
             let inPendingGoalsCount = 0
             let totalGoalCount = 0
 
+
+
             totalGoalCount = res.data.message.length
 
             for (let i = 0; i <= res.data.message.length - 1; i++) {
@@ -83,7 +87,24 @@ const Goals = () => {
               }
             }
 
+
+            var approvedTotalGoals = 0
+
+            for (let i = 0; i <= res.data.message.length - 1; i++) {
+              if (
+                res.data.message[i]['applicationStatus'] != 'pending' &&
+                res.data.message[i]['currentStatus'] != 'pending'
+              ) {
+                approvedTotalGoals++
+              } 
+
+              
+            }
+
           inPendingGoalsCount = inProgresGoals.length
+
+          setRemainingGoalsCount(approvedTotalGoals-completedGoalsCount)
+          setCompletedGoalsCount(completedGoalsCount)
 
           // set data into useState
           setGoals(inProgresGoals)
@@ -132,7 +153,7 @@ const Goals = () => {
           <div>
             {/* replace with real chart */}
 
-            <GoalChart complete={11} remaining={11} />
+            <GoalChart complete={completedGoalsCount} remaining={remainingGoalsCount} />
 
             {/* <Image src={goalsGraph} alt='Goals Graph' /> */}
           </div>
@@ -214,19 +235,19 @@ const GoalChart: React.FC<{ remaining: number; complete: number }> = (
           <div className='w-36'>
             <DoughnutChart
               cutout='78%'
-              dataList={[props.remaining, props.complete]}
+              dataList={[props.complete, props.remaining]}
             />
           </div>
           <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-semibold text-center'>
-            {(props.complete / (props.remaining + props.complete)) * 100}
+            {Math.round((props.complete / (props.remaining + props.complete)) * 100)}%
             <br />
             Complete
           </p>
         </div>
         <div className='flex flex-col'>
-          <GoalChartKey name='Goals Remainging' color='bg-communify-green' />
+          <GoalChartKey name='Goals Completed' color='bg-communify-green' />
           <GoalChartKey
-            name='Goals Completed'
+            name='Goals Remaining'
             color='bg-communify-chart-green-alt'
           />
         </div>
