@@ -99,7 +99,7 @@ const Proposegoal = () => {
 
   return (
     <Navigation>
-      <div className='flex flex-col w-full p-1'>
+       <div className='flex flex-col py-6 pl-6 pr-12 w-full min-w-0 bg-background-gray'>
         <Title cityName={cityName} stateName={stateName}/>
         <div className='h-full flex justify-center my-6 min-h-0'>
           <div className='h-full w-5/12 flex flex-col items-center p-8 rounded-3xl bg-communify-black'>
@@ -132,16 +132,16 @@ const Proposegoal = () => {
 
              <div className='w-full flex justify-evenly mt-8'>
       <button className='px-4 py-2 rounded-lg text-white bg-communify-green border-2 border-communify-green hover:bg-communify-green-alt hover:border-communify-green-alt focus:border-communify-green-alt focus:bg-communify-green-alt transition ease-in duration-100' onClick={handleClick}>
-        Create Event
+        Propose Goal
       </button>
       </div>
 
           </div>
         </div>
 
-        <p className='text-sm font-normal mt-3'>*All goal requests are logged. Any spam or inappropriate goals will be removed any may result in action against the goal creator</p>
+        <p className='text-sm font-normal mt-3'>*All goal requests are logged. Any spam or inappropriate goals will be removed any may result in legal action or consequences against the goal creator</p>
+       </div>
 
-      </div>
 
     
     </Navigation>
@@ -219,10 +219,13 @@ const Title:React.FC<{ cityName: string; stateName: string }> = (props) => {
   const router = useRouter()
 
   return (
-    <div className='flex items-end'>
-      {/* server side render the goal name */}
-      <h1 className='text-2xl font-semibold'>Propose Event</h1>
-      <p className='ml-4 text-communify-green'>City of {props.cityName}, {props.stateName}</p>
+    <div className='w-full min-w-0 flex flex-col'>
+      <div className='flex items-end'>
+        <h1 className=' text-2xl font-semibold'>Propose Goal</h1>
+        <p className='ml-4 text-communify-green'>
+          City of {props.cityName}, {props.stateName}
+        </p>
+      </div>
     </div>
   )
 }

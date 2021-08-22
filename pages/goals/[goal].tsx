@@ -10,6 +10,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import Link from 'next/link'
+import ProposeEvent from '../propose-event'
 
 const Goals = () => {
   const router = useRouter()
@@ -41,6 +43,10 @@ const Goals = () => {
   const [projectGraphStatus, setProjectGraphStatus] = useState([0,0])
 
   // Backend
+
+  function upvote(id){
+    console.log('upvote: ' + id)
+  }
 
   useEffect(
     () => {
@@ -147,6 +153,7 @@ upvotes: 0
                   upVotes={projectsForGoal[i]['upvotes']}
                   inProgress={(projectsForGoal[i]['currentStatus'] == 'inProgress')? true: false}
                   applicationApproved={(projectsForGoal[i]['applicationStatus'] == 'accepted')? true: false}
+                  upvote={upvote(projectsForGoal[i]['projectID'])}
                 />
               )
 
@@ -313,12 +320,13 @@ const ProjectProposal: React.FC<{
   upVotes: number
   inProgress: boolean
   applicationApproved: boolean
+  upvote: any
 }> = (props) => {
   return (
     <div className='flex justify-between items-center mt-3 px-6 py-4 rounded-lg bg-white'>
       <div className='flex items-center'>
         <div className='flex flex-col items-center mr-4'>
-          <Triangle color='gray' />
+          <Triangle color='gray'/>
           <p className='mt-1'>{props.upVotes}</p>
         </div>
         <div>
@@ -393,11 +401,15 @@ const RecentUpdate: React.FC<{ name: string; project: string }> = (props) => {
   )
 }
 
-const Triangle: React.FC<{ color: string }> = (props) => {
+const Triangle: React.FC<{ color: string; }> = (props) => {
   return (
-    <div className='w-11 overflow-hidden inline-block'>
-      <div className=' h-7 w-7 bg-black rotate-45 transform origin-bottom-left'></div>
-    </div>
+    <button>
+      <div className='w-11 overflow-hidden inline-block' >
+        <div className=' h-7 w-7 bg-black rotate-45 transform origin-bottom-left'></div>
+      </div>
+    </button>
+
+
   )
 }
 
