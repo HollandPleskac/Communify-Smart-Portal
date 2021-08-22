@@ -83,6 +83,18 @@ const Goals = () => {
             `https://communify-api.protosystems.net/v1/getGoalData?cityCode=${cityCode}&goalID=${router.query.goal}`
           )
 
+
+          const updatesRes = await axios.get(
+            `https://communify-api.protosystems.net/v1/getRecentProjectUpdates?cityCode=${cityCode}`
+          )
+
+          if(updatesRes.data.status == 'success'){
+            setRecentUpdates(updatesRes.data.message)
+          }
+          console.log("//////////////")
+          
+
+          console.log(updatesRes.data)
           console.log('got goal info')
           console.log('res', res.data)
 
@@ -153,7 +165,7 @@ upvotes: 0
                   upVotes={projectsForGoal[i]['upvotes']}
                   inProgress={(projectsForGoal[i]['currentStatus'] == 'inProgress')? true: false}
                   applicationApproved={(projectsForGoal[i]['applicationStatus'] == 'accepted')? true: false}
-                  upvote={upvote(projectsForGoal[i]['projectID'])}
+                
                 />
               )
 
@@ -274,26 +286,15 @@ upvotes: 0
           <GoalProgress projectGraphStatus = {projectGraphStatus}/>
           <p className='text-sm mt-4 mb-2'>Recent Updates</p>
           <div className='flex-grow overflow-y-auto'>
-            <RecentUpdate
-              name='Assemble Playground in park'
-              project='Improve our Parks'
-            />
-            <RecentUpdate
-              name='Assemble Playground in park'
-              project='Improve our Parks'
-            />
-            <RecentUpdate
-              name='Assemble Playground in park'
-              project='Improve our Parks'
-            />
-            <RecentUpdate
-              name='Assemble Playground in park'
-              project='Improve our Parks'
-            />
-            <RecentUpdate
-              name='Assemble Playground in park'
-              project='Improve our Parks'
-            />
+
+          {recentUpdates.map((update: any, index: number) => (
+        
+          <RecentUpdate
+          name={update.title}
+          project={update.description}
+        />
+      ))}
+
           </div>
         </div>
       </div>
@@ -320,7 +321,6 @@ const ProjectProposal: React.FC<{
   upVotes: number
   inProgress: boolean
   applicationApproved: boolean
-  upvote: any
 }> = (props) => {
   return (
     <div className='flex justify-between items-center mt-3 px-6 py-4 rounded-lg bg-white'>
@@ -396,7 +396,7 @@ const RecentUpdate: React.FC<{ name: string; project: string }> = (props) => {
   return (
     <div className='bg-white rounded-lg px-5 py-4 mt-3'>
       <h2 className='font-semibold '>{props.name}</h2>
-      <p className='text-sm mt-1'>Project: {props.project}</p>
+      <p className='text-sm mt-1'>{props.project}</p>
     </div>
   )
 }
