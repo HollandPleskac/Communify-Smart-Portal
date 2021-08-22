@@ -14,7 +14,7 @@ const TestPage = () => {
     </Navigation>
   )
 }
-
+ 
 const GoalChart = () => {
   return (
     <div className='bg-communify-black flex justify-evenly py-6 px-2 rounded-3xl'>
