@@ -99,7 +99,7 @@ const Proposegoal = () => {
 
   return (
     <Navigation>
-      <div className='flex flex-col w-full p-6'>
+      <div className='flex flex-col w-full p-1'>
         <Title cityName={cityName} stateName={stateName}/>
         <div className='h-full flex justify-center my-6 min-h-0'>
           <div className='h-full w-5/12 flex flex-col items-center p-8 rounded-3xl bg-communify-black'>
@@ -112,7 +112,7 @@ const Proposegoal = () => {
               setValue={setName}
             />
             <InputGroup
-              labelName='Estimated Finish'
+              labelName='Estimated Finish (mm/dd/yyyy)'
               id='event-date'
               marginTop='mt-5'
               value={estimatedFinish}
@@ -131,16 +131,19 @@ const Proposegoal = () => {
 
 
              <div className='w-full flex justify-evenly mt-8'>
-      <button className='px-4 py-2 rounded-lg text-communify-green bg-white border-2 border-communify-green hover:border-communify-green-alt hover:text-communify-green-alt focus:border-communify-green-alt focus:text-communify-green-alt transition ease-in duration-100'>
-        Upload Photo
-      </button>
       <button className='px-4 py-2 rounded-lg text-white bg-communify-green border-2 border-communify-green hover:bg-communify-green-alt hover:border-communify-green-alt focus:border-communify-green-alt focus:bg-communify-green-alt transition ease-in duration-100' onClick={handleClick}>
         Create Event
       </button>
-    </div>
+      </div>
+
           </div>
         </div>
+
+        <p className='text-sm font-normal mt-3'>*All goal requests are logged. Any spam or inappropriate goals will be removed any may result in action against the goal creator</p>
+
       </div>
+
+    
     </Navigation>
   )
 }

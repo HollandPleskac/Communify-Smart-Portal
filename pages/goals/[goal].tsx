@@ -152,6 +152,13 @@ upvotes: 0
 
           }
 
+          if(totalProjects == 0 && completedProjects == 0){
+            totalProjects = 1
+            completedProjects = 0
+          }
+
+
+
           setProjects(projectsTemp)
           setProjectGraphStatus([completedProjects, totalProjects]) // IMPORTANT REMINDER: Pending projects are not factored into graph totals
 
@@ -360,7 +367,7 @@ const GoalProgress:React.FC<{ projectGraphStatus: any;}> = (props) => {
         </div>
 
         <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-lg text-center '>
-          35% Complete
+          {Math.round((props.projectGraphStatus[0]/ (props.projectGraphStatus[1])) * 100)}% Complete
         </p>
       </div>
       <div className='flex mt-4 justify-center text-white'>
