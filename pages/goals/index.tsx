@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import Navigation from '../../components/nav'
 import AuthContext from '../../context/authContext'
 import Image from 'next/image'
@@ -13,6 +13,7 @@ import 'firebase/auth'
 import next from 'next'
 
 const Goals = () => {
+  const authCtx = useContext(AuthContext)
   // [read, write(use the function)] = useState(type of data)
   const [goals, setGoals] = useState([])
   const [cityName, setCityName] = useState('Loading')
@@ -23,87 +24,81 @@ const Goals = () => {
   const [goalStats, setGoalStats] = useState({})
 
   // Have to use useEffect for fetching data and for subscriptions
-  useEffect(
-    () => {
-      const getGoals = async () => {
-        //Gets the citycode the user is registered with
+  useEffect(() => {
+    const getGoals = async () => {
+      //Gets the citycode the user is registered with
 
-        const user = firebase.auth().currentUser
+      const user = authCtx.user
 
-        console.log(user)
+      console.log(user)
 
-        var email = user.email
+      var email = user.email
 
-        user.getIdToken().then(async function (token) {
-          const userRes = await axios.get(
-            `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
+      user.getIdToken().then(async function (token) {
+        const userRes = await axios.get(
+          `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
+        )
+
+        console.log(userRes.data)
+
+        if (userRes.data.status == 'success') {
+          const cityCode = userRes.data.userData.city
+
+          console.log(cityCode)
+
+          const res = await axios.get(
+            `https://communify-api.protosystems.net/v1/getGoals?limit=none&cityCode=${cityCode}`
           )
 
-          console.log(userRes.data)
+          console.log('got goals')
+          console.log('res', res.data)
 
-          if (userRes.data.status == 'success') {
-            const cityCode = userRes.data.userData.city
+          // Gets finished goals
 
-            console.log(cityCode)
+          let finishedGoalsTemp = []
+          let inProgresGoals = []
 
-            const res = await axios.get(
-              `https://communify-api.protosystems.net/v1/getGoals?limit=none&cityCode=${cityCode}`
-            )
+          // Filters list to take out pending
 
-            console.log('got goals')
-            console.log('res', res.data)
+          let completedGoalsCount = 0
+          let inPendingGoalsCount = 0
+          let totalGoalCount = 0
 
-            // Gets finished goals
+          totalGoalCount = res.data.message.length
 
-            let finishedGoalsTemp = []
-            let inProgresGoals = []
-
-            // Filters list to take out pending
-
-            let completedGoalsCount = 0
-            let inPendingGoalsCount = 0
-            let totalGoalCount = 0
-
-
-
-            totalGoalCount = res.data.message.length
-
-            for (let i = 0; i <= res.data.message.length - 1; i++) {
-              if (res.data.message[i]['currentStatus'] == 'completed') {
-                finishedGoalsTemp.push(res.data.message[i])
-              }
+          for (let i = 0; i <= res.data.message.length - 1; i++) {
+            if (res.data.message[i]['currentStatus'] == 'completed') {
+              finishedGoalsTemp.push(res.data.message[i])
             }
+          }
 
-            completedGoalsCount = finishedGoalsTemp.length
+          completedGoalsCount = finishedGoalsTemp.length
 
-            // Filters list to take out pending
+          // Filters list to take out pending
 
-            for (let i = 0; i <= res.data.message.length - 1; i++) {
-              if (
-                res.data.message[i]['currentStatus'] == 'inProgress' ||
-                res.data.message[i]['currentStatus'] == 'pending'
-              ) {
-                inProgresGoals.push(res.data.message[i])
-              }
+          for (let i = 0; i <= res.data.message.length - 1; i++) {
+            if (
+              res.data.message[i]['currentStatus'] == 'inProgress' ||
+              res.data.message[i]['currentStatus'] == 'pending'
+            ) {
+              inProgresGoals.push(res.data.message[i])
             }
+          }
 
+          var approvedTotalGoals = 0
 
-            var approvedTotalGoals = 0
-
-            for (let i = 0; i <= res.data.message.length - 1; i++) {
-              if (
-                res.data.message[i]['applicationStatus'] != 'pending' &&
-                res.data.message[i]['currentStatus'] != 'pending'
-              ) {
-                approvedTotalGoals++
-              } 
-
-              
+          for (let i = 0; i <= res.data.message.length - 1; i++) {
+            if (
+              res.data.message[i]['applicationStatus'] != 'pending' &&
+              res.data.message[i]['currentStatus'] != 'pending'
+            ) {
+              approvedTotalGoals++
             }
+          }
 
           inPendingGoalsCount = inProgresGoals.length
 
-          setRemainingGoalsCount(approvedTotalGoals-completedGoalsCount)
+          setRemainingGoalsCount(approvedTotalGoals - completedGoalsCount)
           setCompletedGoalsCount(completedGoalsCount)
 
           // set data into useState
@@ -123,24 +118,17 @@ const Goals = () => {
             total: totalGoalCount,
           })
         } else {
-          console.log("Error fetching user from API: " +  userRes.data.message)
+          console.log('Error fetching user from API: ' + userRes.data.message)
         }
-      });
+      })
+    }
 
-      }
+    // async await so I used a separate function
+    if (authCtx.user) getGoals()
 
-      // async await so I used a separate function
-      getGoals()
-
-      // cancel subscriptions in the return fn
-      //  return () => {}
-    },
-    [
-      // rerender the useEffect fn
-      // nothing here = it only runs once at the beginning,
-      // if you put something here = it runs when that value changes
-    ]
-  )
+    // cancel subscriptions in the return fn
+    //  return () => {}
+  }, [authCtx.user])
 
   return (
     <Navigation>
@@ -153,7 +141,10 @@ const Goals = () => {
           <div>
             {/* replace with real chart */}
 
-            <GoalChart complete={completedGoalsCount} remaining={remainingGoalsCount} />
+            <GoalChart
+              complete={completedGoalsCount}
+              remaining={remainingGoalsCount}
+            />
 
             {/* <Image src={goalsGraph} alt='Goals Graph' /> */}
           </div>
@@ -177,12 +168,11 @@ const Title: React.FC<{ cityName: string; stateName: string }> = (props) => {
         </p>
       </div>
 
-      <Link href="/propose-goal">
-      <button className='text-sm px-3 py-2 rounded-lg text-white bg-communify-green hover:bg-communify-green-alt focus:bg-communify-green-alt'>
-        Propose Goal
-      </button>
+      <Link href='/propose-goal'>
+        <button className='text-sm px-3 py-2 rounded-lg text-white bg-communify-green hover:bg-communify-green-alt focus:bg-communify-green-alt'>
+          Propose Goal
+        </button>
       </Link>
-
     </div>
   )
 }
@@ -243,7 +233,10 @@ const GoalChart: React.FC<{ remaining: number; complete: number }> = (
             />
           </div>
           <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-semibold text-center'>
-            {Math.round((props.complete / (props.remaining + props.complete)) * 100)}%
+            {Math.round(
+              (props.complete / (props.remaining + props.complete)) * 100
+            )}
+            %
             <br />
             Complete
           </p>

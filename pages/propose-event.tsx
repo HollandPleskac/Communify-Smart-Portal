@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 
 import Navigation from '../components/nav'
+import AuthContext from '../context/authContext'
 
 const ProposeEvent = () => {
   const [name, setName] = useState<string>('')

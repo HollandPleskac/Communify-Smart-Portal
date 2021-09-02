@@ -22,89 +22,82 @@ const Dashboard = () => {
   const [stateName, setStateName] = useState('Loading')
 
   // Have to use useEffect for fetching data and for subscriptions
-  useEffect(
-    () => {
-      const getGoals = async () => {
-        //Gets the citycode the user is registered with
+  useEffect(() => {
+    const getGoals = async () => {
+      //Gets the citycode the user is registered with
 
-        let goalsListTemp = []
+      let goalsListTemp = []
 
-        try {
-          const user = firebase.auth().currentUser
-          var email = user.email
+      try {
+        const user = authCtx.user
+        var email = user.email
 
-          user.getIdToken().then(async function (token) {
-            const userRes = await axios.get(
-              `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
+        user.getIdToken().then(async function (token) {
+          const userRes = await axios.get(
+            `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
+          )
+
+          if (userRes.data.status == 'success') {
+            const cityCode = userRes.data.userData.city
+
+            const res = await axios.get(
+              `https://communify-api.protosystems.net/v1/getGoals?limit=5&cityCode=${cityCode}`
             )
+            let goals = await res.data.message
+            console.log('RAW GOALS', goals)
 
-            if (userRes.data.status == 'success') {
-              const cityCode = userRes.data.userData.city
-
-              const res = await axios.get(
-                `https://communify-api.protosystems.net/v1/getGoals?limit=5&cityCode=${cityCode}`
-              )
-              let goals = await res.data.message
-              console.log('RAW GOALS', goals)
-
-              goals = goals.map((goal) => {
-                console.log('goal', goal)
-                let completedProjects = 0
-                let totalProjects = 0
-                for (let i = 0; i < goal.projects.length; i++) {
-                  if (goal.projects[i].applicationStatus == 'accepted') {
-                    totalProjects++
-                  }
-
-                  if (
-                    goal.projects[i].applicationStatus == 'accepted' &&
-                    goal.projects[i].currentStatus == 'completed'
-                  ) {
-                    completedProjects++
-                  }
+            goals = goals.map((goal) => {
+              console.log('goal', goal)
+              let completedProjects = 0
+              let totalProjects = 0
+              for (let i = 0; i < goal.projects.length; i++) {
+                if (goal.projects[i].applicationStatus == 'accepted') {
+                  totalProjects++
                 }
 
-                if (totalProjects == 0) {
-                  totalProjects = 1
+                if (
+                  goal.projects[i].applicationStatus == 'accepted' &&
+                  goal.projects[i].currentStatus == 'completed'
+                ) {
+                  completedProjects++
                 }
+              }
 
-                goalsListTemp.push(
-                  new GoalModel(
-                    goal.goalName,
-                    goal.dateCreated,
-                    goal.estimatedFinish,
-                    completedProjects,
-                    totalProjects - completedProjects,
-                    goal.goalID
-                  )
+              if (totalProjects == 0) {
+                totalProjects = 1
+              }
+
+              goalsListTemp.push(
+                new GoalModel(
+                  goal.goalName,
+                  goal.dateCreated,
+                  goal.estimatedFinish,
+                  completedProjects,
+                  totalProjects - completedProjects,
+                  goal.goalID
                 )
-              })
+              )
+            })
 
-              setGoalsList(goalsListTemp)
+            setGoalsList(goalsListTemp)
 
-              setCityName(userRes.data.cityData.city)
-              setStateName(userRes.data.cityData.state)
+            setCityName(userRes.data.cityData.city)
+            setStateName(userRes.data.cityData.state)
 
-              console.log('goals', goals)
-            }
-          })
-        } catch (e) {
-          console.log('error occurred', e)
-        }
+            console.log('goals', goals)
+          }
+        })
+      } catch (e) {
+        console.log('error occurred', e)
       }
+    }
 
-      // async await so I used a separate function
-      getGoals()
+    // async await so I used a separate function
+    if (authCtx.user) getGoals()
 
-      // cancel subscriptions in the return fn
-      //  return () => {}
-    },
-    [
-      // rerender the useEffect fn
-      // nothing here = it only runs once at the beginning,
-      // if you put something here = it runs when that value changes
-    ]
-  )
+    // cancel subscriptions in the return fn
+    //  return () => {}
+  }, [authCtx.user])
 
   return (
     <Navigation>

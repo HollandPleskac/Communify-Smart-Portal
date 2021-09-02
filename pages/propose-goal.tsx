@@ -1,11 +1,15 @@
-import React, { useEffect,useState  } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
+
 import Navigation from '../components/nav'
+import AuthContext from '../context/authContext'
+
 import firebase from 'firebase/app'
 import 'firebase/auth'
 
 const Proposegoal = () => {
+  const authCtx = useContext(AuthContext)
   const [name, setName] = useState<string>('')
   const [estimatedFinish, setEstimatedFinish] = useState<string>('')
   const [description, setDescription] = useState<string>('')
@@ -18,53 +22,46 @@ const Proposegoal = () => {
   const [cityCode, setCityCode] = useState('')
 
   // Have to use useEffect for fetching data and for subscriptions
-  useEffect(
-    () => {
-      const getGoals = async () => {
-        //Gets the citycode the user is registered with
+  useEffect(() => {
+    const getGoals = async () => {
+      //Gets the citycode the user is registered with
 
-        const user = firebase.auth().currentUser
+      const user = authCtx.user
 
-        console.log(user)
+      console.log(user)
 
-        var email = user.email
+      var email = user.email
 
-        user.getIdToken().then(async function (token) {
-          const userRes = await axios.get(
-            `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
-          )
+      user.getIdToken().then(async function (token) {
+        const userRes = await axios.get(
+          `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
+        )
 
-          console.log(userRes.data)
+        console.log(userRes.data)
 
-          if (userRes.data.status == 'success') {
-            const cityCode = userRes.data.userData.city
+        if (userRes.data.status == 'success') {
+          const cityCode = userRes.data.userData.city
 
-            console.log(cityCode)
+          console.log(cityCode)
 
           setCityName(userRes.data.cityData.city)
           setStateName(userRes.data.cityData.state)
           setEmail(user.email)
           setCityCode(cityCode)
-
         } else {
-          console.log("Error fetching user from API: " +  userRes.data.message)
+          console.log('Error fetching user from API: ' + userRes.data.message)
         }
-      });
+      })
+    }
 
-      }
+    // async await so I used a separate function
+    getGoals()
 
-      // async await so I used a separate function
-      getGoals()
-
-      // cancel subscriptions in the return fn
-      //  return () => {}
-    },
-    [
-      // rerender the useEffect fn
-      // nothing here = it only runs once at the beginning,
-      // if you put something here = it runs when that value changes
-    ]
-  )
+    // cancel subscriptions in the return fn
+    //  return () => {}
+  }, [
+    authCtx.user,
+  ])
 
 
   async function handleClick (e){
