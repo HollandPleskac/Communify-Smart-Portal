@@ -48,6 +48,7 @@ const Goals = () => {
     console.log('upvote: ' + id)
   }
 
+
   useEffect(
     () => {
       const getGoalData = async () => {
@@ -321,12 +322,13 @@ const ProjectProposal: React.FC<{
   upVotes: number
   inProgress: boolean
   applicationApproved: boolean
+  clickHandler: any
 }> = (props) => {
   return (
     <div className='flex justify-between items-center mt-3 px-6 py-4 rounded-lg bg-white'>
       <div className='flex items-center'>
         <div className='flex flex-col items-center mr-4'>
-          <Triangle color='gray'/>
+          <Triangle color='gray' {props.clickHandler}/>
           <p className='mt-1'>{props.upVotes}</p>
         </div>
         <div>
@@ -401,9 +403,9 @@ const RecentUpdate: React.FC<{ name: string; project: string }> = (props) => {
   )
 }
 
-const Triangle: React.FC<{ color: string; }> = (props) => {
+const Triangle: React.FC<{ color: string; clickHandler: any }> = (props) => {
   return (
-    <button>
+    <button onClick={props.clickHandler}>
       <div className='w-11 overflow-hidden inline-block' >
         <div className=' h-7 w-7 bg-black rotate-45 transform origin-bottom-left'></div>
       </div>
