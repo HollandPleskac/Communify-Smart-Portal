@@ -10,6 +10,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import Link from 'next/link'
+import ProposeEvent from '../propose-event'
 
 const Goals = () => {
   const router = useRouter()
@@ -41,6 +43,11 @@ const Goals = () => {
   const [projectGraphStatus, setProjectGraphStatus] = useState([0,0])
 
   // Backend
+
+  function upvote(id){
+    console.log('upvote: ' + id)
+  }
+
 
   useEffect(
     () => {
@@ -77,6 +84,18 @@ const Goals = () => {
             `https://communify-api.protosystems.net/v1/getGoalData?cityCode=${cityCode}&goalID=${router.query.goal}`
           )
 
+
+          const updatesRes = await axios.get(
+            `https://communify-api.protosystems.net/v1/getRecentProjectUpdates?cityCode=${cityCode}`
+          )
+
+          if(updatesRes.data.status == 'success'){
+            setRecentUpdates(updatesRes.data.message)
+          }
+          console.log("//////////////")
+          
+
+          console.log(updatesRes.data)
           console.log('got goal info')
           console.log('res', res.data)
 
@@ -147,10 +166,18 @@ upvotes: 0
                   upVotes={projectsForGoal[i]['upvotes']}
                   inProgress={(projectsForGoal[i]['currentStatus'] == 'inProgress')? true: false}
                   applicationApproved={(projectsForGoal[i]['applicationStatus'] == 'accepted')? true: false}
+                
                 />
               )
 
           }
+
+          if(totalProjects == 0 && completedProjects == 0){
+            totalProjects = 1
+            completedProjects = 0
+          }
+
+
 
           setProjects(projectsTemp)
           setProjectGraphStatus([completedProjects, totalProjects]) // IMPORTANT REMINDER: Pending projects are not factored into graph totals
@@ -260,26 +287,15 @@ upvotes: 0
           <GoalProgress projectGraphStatus = {projectGraphStatus}/>
           <p className='text-sm mt-4 mb-2'>Recent Updates</p>
           <div className='flex-grow overflow-y-auto'>
-            <RecentUpdate
-              name='Assemble Playground in park'
-              project='Improve our Parks'
-            />
-            <RecentUpdate
-              name='Assemble Playground in park'
-              project='Improve our Parks'
-            />
-            <RecentUpdate
-              name='Assemble Playground in park'
-              project='Improve our Parks'
-            />
-            <RecentUpdate
-              name='Assemble Playground in park'
-              project='Improve our Parks'
-            />
-            <RecentUpdate
-              name='Assemble Playground in park'
-              project='Improve our Parks'
-            />
+
+          {recentUpdates.map((update: any, index: number) => (
+        
+          <RecentUpdate
+          name={update.title}
+          project={update.description}
+        />
+      ))}
+
           </div>
         </div>
       </div>
@@ -306,12 +322,13 @@ const ProjectProposal: React.FC<{
   upVotes: number
   inProgress: boolean
   applicationApproved: boolean
+  clickHandler: any
 }> = (props) => {
   return (
     <div className='flex justify-between items-center mt-3 px-6 py-4 rounded-lg bg-white'>
       <div className='flex items-center'>
         <div className='flex flex-col items-center mr-4'>
-          <Triangle color='gray' />
+          <Triangle color='gray' {props.clickHandler}/>
           <p className='mt-1'>{props.upVotes}</p>
         </div>
         <div>
@@ -360,7 +377,7 @@ const GoalProgress:React.FC<{ projectGraphStatus: any;}> = (props) => {
         </div>
 
         <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-lg text-center '>
-          35% Complete
+          {Math.round((props.projectGraphStatus[0]/ (props.projectGraphStatus[1])) * 100)}% Complete
         </p>
       </div>
       <div className='flex mt-4 justify-center text-white'>
@@ -381,16 +398,20 @@ const RecentUpdate: React.FC<{ name: string; project: string }> = (props) => {
   return (
     <div className='bg-white rounded-lg px-5 py-4 mt-3'>
       <h2 className='font-semibold '>{props.name}</h2>
-      <p className='text-sm mt-1'>Project: {props.project}</p>
+      <p className='text-sm mt-1'>{props.project}</p>
     </div>
   )
 }
 
-const Triangle: React.FC<{ color: string }> = (props) => {
+const Triangle: React.FC<{ color: string; clickHandler: any }> = (props) => {
   return (
-    <div className='w-11 overflow-hidden inline-block'>
-      <div className=' h-7 w-7 bg-black rotate-45 transform origin-bottom-left'></div>
-    </div>
+    <button onClick={props.clickHandler}>
+      <div className='w-11 overflow-hidden inline-block' >
+        <div className=' h-7 w-7 bg-black rotate-45 transform origin-bottom-left'></div>
+      </div>
+    </button>
+
+
   )
 }
 
