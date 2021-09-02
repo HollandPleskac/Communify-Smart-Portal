@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import firebase from 'firebase/app'
 import 'firebase/auth'
-import Link from 'next/link'
 import ProposeEvent from '../propose-event'
 
 const Goals = () => {
@@ -44,8 +43,28 @@ const Goals = () => {
 
   // Backend
 
-  function upvote(id){
-    console.log('upvote: ' + id)
+  async function upvote(dataList){
+
+    const user = firebase.auth().currentUser
+
+    var email = user.email
+
+    /*
+
+  var city = req.query.cityCode
+  var projectID = req.query.projectID
+
+  var userEmail = req.query.userID
+
+  var upOrDownVote = req.query.upOrDown
+    */
+
+    const userRes = await axios.get(
+      `https://communify-api.protosystems.net/v1/getUser?city=${dataList[0]}&projectID=${dataList[1]}&userID=${email}&upOrDown=up`
+    )
+
+
+    console.log('upvote: ' + dataList)
   }
 
 
@@ -166,6 +185,7 @@ upvotes: 0
                   upVotes={projectsForGoal[i]['upvotes']}
                   inProgress={(projectsForGoal[i]['currentStatus'] == 'inProgress')? true: false}
                   applicationApproved={(projectsForGoal[i]['applicationStatus'] == 'accepted')? true: false}
+                  clickHandler={upvote.bind(null, [cityCode, projectsForGoal[i]['projectID']])}
                 
                 />
               )
@@ -328,7 +348,7 @@ const ProjectProposal: React.FC<{
     <div className='flex justify-between items-center mt-3 px-6 py-4 rounded-lg bg-white'>
       <div className='flex items-center'>
         <div className='flex flex-col items-center mr-4'>
-          <Triangle color='gray' {props.clickHandler}/>
+          <Triangle color='gray' clickHandler = {props.clickHandler}/>
           <p className='mt-1'>{props.upVotes}</p>
         </div>
         <div>
