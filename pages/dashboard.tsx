@@ -183,12 +183,12 @@ const Goal: React.FC<{
 }> = (props) => {
   const clickHandler = () => {
     console.log('test', props.id)
-    router.push('/goals/'+props.id)
+    router.push('/goals/' + props.id)
   }
 
   return (
     <div
-      className={`px-6 py-6 w-full flex flex-col justify-top items-center bg-communify-black rounded-3xl ${props.margin}`}
+      className={`px-6 py-6 w-full flex flex-col justify-top items-center bg-communify-black rounded-3xl cursor-pointer ${props.margin}`}
       onClick={clickHandler}
     >
       <div className='relative'>
