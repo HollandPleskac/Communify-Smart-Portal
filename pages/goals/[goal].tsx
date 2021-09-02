@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import Navigation from '../../components/nav'
+import AuthContext from '../../context/authContext'
+
 import Image from 'next/image'
 import graphImg from '../../public/graph.png'
 import DoughnutChart from '../../components/doughnut-chart'
@@ -14,6 +16,7 @@ import ProposeEvent from '../propose-event'
 
 const Goals = () => {
   const router = useRouter()
+  const authCtx = useContext(AuthContext)
 
   const [projects, setProjects] = useState([])
 
@@ -39,13 +42,12 @@ const Goals = () => {
 
   const [recentUpdates, setRecentUpdates] = useState([])
   const [goalName, setGoalName] = useState('Loading')
-  const [projectGraphStatus, setProjectGraphStatus] = useState([0,0])
+  const [projectGraphStatus, setProjectGraphStatus] = useState([0, 0])
 
   // Backend
 
-  async function upvote(dataList){
-
-    const user = firebase.auth().currentUser
+  async function upvote(dataList) {
+    const user = authCtx.user
 
     var email = user.email
 
@@ -55,93 +57,83 @@ const Goals = () => {
       const userRes = await axios.get(
         `https://communify-api.protosystems.net/v1/upvoteProject?cityCode=${dataList[0]}&projectID=${dataList[1]}&userID=${email}&upOrDown=up`
       )
-  
+
       console.log(userRes.data)
     })
-
-
-
 
     console.log('upvote: ' + dataList)
   }
 
+  useEffect(() => {
+    const getGoalData = async () => {
+      //Gets the citycode the user is registered with
 
-  useEffect(
-    () => {
-      const getGoalData = async () => {
-        //Gets the citycode the user is registered with
+      const user = authCtx.user
 
-        const user = firebase.auth().currentUser
+      console.log(user)
 
-        console.log(user)
+      var email = user.email
+      const userRes = await axios.get(
+        `https://communify-api.protosystems.net/v1/getUser?email=${email}`
+      )
 
-        var email = user.email
-        const userRes = await axios.get(
-          `https://communify-api.protosystems.net/v1/getUser?email=${email}`
+      console.log(userRes.data)
+
+      if (userRes.data.status == 'success') {
+        const cityCode = userRes.data.message.city
+        //fetch data
+
+        console.log(cityCode)
+
+        const resCityName = await axios.get(
+          `https://communify-api.protosystems.net/v1/getCityData?cityCode=${cityCode}`
         )
 
-        console.log(userRes.data)
+        console.log(resCityName.data)
 
-        
+        const res = await axios.get(
+          `https://communify-api.protosystems.net/v1/getGoalData?cityCode=${cityCode}&goalID=${router.query.goal}`
+        )
 
-        if (userRes.data.status == 'success') {
-          const cityCode = userRes.data.message.city
-          //fetch data
+        const updatesRes = await axios.get(
+          `https://communify-api.protosystems.net/v1/getRecentProjectUpdates?cityCode=${cityCode}`
+        )
 
-          console.log(cityCode)
+        if (updatesRes.data.status == 'success') {
+          setRecentUpdates(updatesRes.data.message)
+        }
+        console.log('//////////////')
 
-          const resCityName = await axios.get(
-            `https://communify-api.protosystems.net/v1/getCityData?cityCode=${cityCode}`
-          )
+        console.log(updatesRes.data)
+        console.log('got goal info')
+        console.log('res', res.data)
 
-          console.log(resCityName.data)
-  
+        setGoalName(res.data.message.goalName)
+        setCityName(resCityName.data.message.city)
+        setStateName(resCityName.data.message.state)
+        setDescription(res.data.message.description)
 
-          const res = await axios.get(
-            `https://communify-api.protosystems.net/v1/getGoalData?cityCode=${cityCode}&goalID=${router.query.goal}`
-          )
+        let projectsForGoal = res.data.message.projects
 
+        let projectsTemp = []
 
-          const updatesRes = await axios.get(
-            `https://communify-api.protosystems.net/v1/getRecentProjectUpdates?cityCode=${cityCode}`
-          )
+        let completedProjects = 0
 
-          if(updatesRes.data.status == 'success'){
-            setRecentUpdates(updatesRes.data.message)
+        let totalProjects = 0
+
+        for (let i = 0; i <= projectsForGoal.length - 1; i++) {
+          if (projectsForGoal[i]['applicationStatus'] == 'accepted') {
+            totalProjects++
           }
-          console.log("//////////////")
-          
 
-          console.log(updatesRes.data)
-          console.log('got goal info')
-          console.log('res', res.data)
-
-          setGoalName(res.data.message.goalName)
-          setCityName(resCityName.data.message.city)
-          setStateName(resCityName.data.message.state)
-          setDescription(res.data.message.description)
-
-          let projectsForGoal = res.data.message.projects
-
-          let projectsTemp = []
-
-          let completedProjects = 0
-
-          let totalProjects = 0
-
-
-          for(let i = 0; i <= projectsForGoal.length - 1; i++){
-
-            if(projectsForGoal[i]['applicationStatus'] == 'accepted'){
-              totalProjects++
-            }
-
-              if(projectsForGoal[i]['applicationStatus'] == 'accepted' && projectsForGoal[i]['currentStatus'] == 'completed'){
-                completedProjects++
-              }
-              projectsTemp.push(
-
-                /*
+          if (
+            projectsForGoal[i]['applicationStatus'] == 'accepted' &&
+            projectsForGoal[i]['currentStatus'] == 'completed'
+          ) {
+            completedProjects++
+          }
+          projectsTemp.push(
+            /*
 applicationStatus: "accepted"
 ​​​​
 cityCode: "981776"
@@ -176,35 +168,44 @@ upvotes: 0
 \
 
                 */
-                <ProjectProposal
-                  name={projectsForGoal[i]['projectName']}
-                  type={(projectsForGoal[i]['projectType'] == 'official') ? 'project' : 'proposal'}
-                  estFinish={projectsForGoal[i]['estimatedFinish']}
-                  upVotes={projectsForGoal[i]['upvotes']}
-                  inProgress={(projectsForGoal[i]['currentStatus'] == 'inProgress')? true: false}
-                  applicationApproved={(projectsForGoal[i]['applicationStatus'] == 'accepted')? true: false}
-                  clickHandler={upvote.bind(null, [cityCode, projectsForGoal[i]['projectID']])}
-                
-                />
-              )
+            <ProjectProposal
+              name={projectsForGoal[i]['projectName']}
+              type={
+                projectsForGoal[i]['projectType'] == 'official'
+                  ? 'project'
+                  : 'proposal'
+              }
+              estFinish={projectsForGoal[i]['estimatedFinish']}
+              upVotes={projectsForGoal[i]['upvotes']}
+              inProgress={
+                projectsForGoal[i]['currentStatus'] == 'inProgress'
+                  ? true
+                  : false
+              }
+              applicationApproved={
+                projectsForGoal[i]['applicationStatus'] == 'accepted'
+                  ? true
+                  : false
+              }
+              clickHandler={upvote.bind(null, [
+                cityCode,
+                projectsForGoal[i]['projectID'],
+              ])}
+            />
+          )
+        }
 
-          }
+        if (totalProjects == 0 && completedProjects == 0) {
+          totalProjects = 1
+          completedProjects = 0
+        }
 
-          if(totalProjects == 0 && completedProjects == 0){
-            totalProjects = 1
-            completedProjects = 0
-          }
+        setProjects(projectsTemp)
+        setProjectGraphStatus([completedProjects, totalProjects]) // IMPORTANT REMINDER: Pending projects are not factored into graph totals
 
+        // Gets finished goals
 
-
-          setProjects(projectsTemp)
-          setProjectGraphStatus([completedProjects, totalProjects]) // IMPORTANT REMINDER: Pending projects are not factored into graph totals
-
-          
-
-          // Gets finished goals
-
-          /*
+        /*
 
           let finishedGoalsTemp = []
           let inProgresGoals = []
@@ -255,24 +256,22 @@ upvotes: 0
           })
 
           */
-        } else {
-          console.log('Error fetching user from API')
-        }
+      } else {
+        console.log('Error fetching user from API')
       }
+    }
 
-      // async await so I used a separate function
-      getGoalData()
+    // async await so I used a separate function
+    getGoalData()
 
-      // cancel subscriptions in the return fn
-      //  return () => {}
-    },
-    [
-      // rerender the useEffect fn
-      // nothing here = it only runs once at the beginning,
-      // if you put something here = it runs when that value changes
-    ]
-  )
-
+    // cancel subscriptions in the return fn
+    //  return () => {}
+  }, [
+    authCtx.user,
+    // rerender the useEffect fn
+    // nothing here = it only runs once at the beginning,
+    // if you put something here = it runs when that value changes
+  ])
 
   useEffect(() => {
     console.log('testing')
@@ -282,7 +281,7 @@ upvotes: 0
     <Navigation>
       <div className=' w-full flex p-6 gap-x-16 bg-background-gray'>
         <div className='flex flex-col w-8/12'>
-          <Title goalName = {goalName} cityname={cityName} state={stateName}/>
+          <Title goalName={goalName} cityname={cityName} state={stateName} />
           <p className='mt-4 px-6 py-8 bg-communify-green rounded-lg text-white'>
             {description}
           </p>
@@ -292,28 +291,15 @@ upvotes: 0
               Create Project Proposal
             </button>
           </div>
-          <div className='overflow-y-auto'>
-
-            {projects}
-
-
-
-          
-          </div>
+          <div className='overflow-y-auto'>{projects}</div>
         </div>
         <div className='flex flex-col w-4/12'>
-          <GoalProgress projectGraphStatus = {projectGraphStatus}/>
+          <GoalProgress projectGraphStatus={projectGraphStatus} />
           <p className='text-sm mt-4 mb-2'>Recent Updates</p>
           <div className='flex-grow overflow-y-auto'>
-
-          {recentUpdates.map((update: any, index: number) => (
-        
-          <RecentUpdate
-          name={update.title}
-          project={update.description}
-        />
-      ))}
-
+            {recentUpdates.map((update: any, index: number) => (
+              <RecentUpdate name={update.title} project={update.description} />
+            ))}
           </div>
         </div>
       </div>
@@ -321,14 +307,18 @@ upvotes: 0
   )
 }
 
-const Title:React.FC<{ goalName: string; cityname: string; state: string }> = (props) => {
+const Title: React.FC<{ goalName: string; cityname: string; state: string }> = (
+  props
+) => {
   const router = useRouter()
 
   return (
     <div className='flex items-end'>
       {/* server side render the goal name */}
       <h1 className='text-2xl font-semibold'>{props.goalName}</h1>
-      <p className='ml-4 text-communify-green'>City of {props.cityname}, {props.state}</p>
+      <p className='ml-4 text-communify-green'>
+        City of {props.cityname}, {props.state}
+      </p>
     </div>
   )
 }
@@ -346,7 +336,7 @@ const ProjectProposal: React.FC<{
     <div className='flex justify-between items-center mt-3 px-6 py-4 rounded-lg bg-white'>
       <div className='flex items-center'>
         <div className='flex flex-col items-center mr-4'>
-          <Triangle color='gray' clickHandler = {props.clickHandler}/>
+          <Triangle color='gray' clickHandler={props.clickHandler} />
           <p className='mt-1'>{props.upVotes}</p>
         </div>
         <div>
@@ -354,37 +344,37 @@ const ProjectProposal: React.FC<{
             <h2 className='font-semibold'>{props.name}</h2>
             {props.type === 'proposal' && (
               <h3 className='ml-3 p-1 text-sm text-white bg-communify-green rounded-lg'>
-                 Proposal 
+                Proposal
               </h3>
             )}
             {props.type === 'project' && (
               <h3 className='ml-3 p-1 text-sm text-white bg-gray-400 rounded-lg'>
-                 Official Project 
+                Official Project
               </h3>
             )}
           </div>
           <p className='text-sm mt-1'>Est Finish: {props.estFinish}</p>
         </div>
       </div>
-      {(props.inProgress && props.applicationApproved) && (
+      {props.inProgress && props.applicationApproved && (
         <p className='text-communify-green font-semibold'>In Progress</p>
       )}
-      
-      {(!props.inProgress && props.applicationApproved) && (
+
+      {!props.inProgress && props.applicationApproved && (
         <FontAwesomeIcon
           icon={faCheckCircle}
           className='text-4xl text-communify-green mr-4'
         />
       )}
 
-      {(props.applicationApproved == false) && (
+      {props.applicationApproved == false && (
         <p className='text-yellow-400 font-semibold'>Pending approval</p>
       )}
     </div>
   )
 }
 
-const GoalProgress:React.FC<{ projectGraphStatus: any;}> = (props) => {
+const GoalProgress: React.FC<{ projectGraphStatus: any }> = (props) => {
   return (
     <div className='flex flex-col bg-communify-black rounded-2xl p-6'>
       <p className='font-semibold text-communify-green'>Goal Progress</p>
@@ -395,7 +385,10 @@ const GoalProgress:React.FC<{ projectGraphStatus: any;}> = (props) => {
         </div>
 
         <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-lg text-center '>
-          {Math.round((props.projectGraphStatus[0]/ (props.projectGraphStatus[1])) * 100)}% Complete
+          {Math.round(
+            (props.projectGraphStatus[0] / props.projectGraphStatus[1]) * 100
+          )}
+          % Complete
         </p>
       </div>
       <div className='flex mt-4 justify-center text-white'>
@@ -424,12 +417,10 @@ const RecentUpdate: React.FC<{ name: string; project: string }> = (props) => {
 const Triangle: React.FC<{ color: string; clickHandler: any }> = (props) => {
   return (
     <button onClick={props.clickHandler}>
-      <div className='w-11 overflow-hidden inline-block' >
+      <div className='w-11 overflow-hidden inline-block'>
         <div className=' h-7 w-7 bg-black rotate-45 transform origin-bottom-left'></div>
       </div>
     </button>
-
-
   )
 }
 
