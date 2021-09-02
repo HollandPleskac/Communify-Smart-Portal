@@ -49,19 +49,17 @@ const Goals = () => {
 
     var email = user.email
 
-    /*
+    var name = user.displayName
 
-  var city = req.query.cityCode
-  var projectID = req.query.projectID
+    user.getIdToken().then(async function (token) {
+      const userRes = await axios.get(
+        `https://communify-api.protosystems.net/v1/upvoteProject?cityCode=${dataList[0]}&projectID=${dataList[1]}&userID=${email}&upOrDown=up`
+      )
+  
+      console.log(userRes.data)
+    })
 
-  var userEmail = req.query.userID
 
-  var upOrDownVote = req.query.upOrDown
-    */
-
-    const userRes = await axios.get(
-      `https://communify-api.protosystems.net/v1/getUser?city=${dataList[0]}&projectID=${dataList[1]}&userID=${email}&upOrDown=up`
-    )
 
 
     console.log('upvote: ' + dataList)
