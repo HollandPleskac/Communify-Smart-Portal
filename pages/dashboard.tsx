@@ -12,6 +12,7 @@ import { faChartPie } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import Goals from './goals'
 import Link from 'next/link'
+import router from 'next/router'
 
 const Dashboard = () => {
   const authCtx = useContext(AuthContext)
@@ -20,94 +21,90 @@ const Dashboard = () => {
   const [cityName, setCityName] = useState('Loading')
   const [stateName, setStateName] = useState('Loading')
 
-    // Have to use useEffect for fetching data and for subscriptions
-    useEffect(
-      () => {
-        const getGoals = async () => {
-          //Gets the citycode the user is registered with
+  // Have to use useEffect for fetching data and for subscriptions
+  useEffect(
+    () => {
+      const getGoals = async () => {
+        //Gets the citycode the user is registered with
 
-          let goalsListTemp = []
+        let goalsListTemp = []
 
-          try {
-            const user = firebase.auth().currentUser
-            var email = user.email
-        
-            user.getIdToken().then(async function (token) {
-              const userRes = await axios.get(
-                `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
+        try {
+          const user = firebase.auth().currentUser
+          var email = user.email
+
+          user.getIdToken().then(async function (token) {
+            const userRes = await axios.get(
+              `https://communify-api.protosystems.net/v1/getUser-city-data?email=${email}&authID=${token}`
+            )
+
+            if (userRes.data.status == 'success') {
+              const cityCode = userRes.data.userData.city
+
+              const res = await axios.get(
+                `https://communify-api.protosystems.net/v1/getGoals?limit=5&cityCode=${cityCode}`
               )
-        
-              if(userRes.data.status == 'success'){
-        
-                const cityCode = userRes.data.userData.city
-        
-                const res = await axios.get(
-                  `https://communify-api.protosystems.net/v1/getGoals?limit=5&cityCode=${cityCode}`
-                )
-                let goals = await res.data.message
-                console.log('RAW GOALS', goals)
-            
-                goals = goals.map((goal) => {
-                  let completedProjects = 0
-                  let totalProjects = 0
-                  for (let i = 0; i < goal.projects.length; i++) {
-                    if (goal.projects[i].applicationStatus == 'accepted') {
-                      totalProjects++
-                    }
-            
-                    if (
-                      goal.projects[i].applicationStatus == 'accepted' &&
-                      goal.projects[i].currentStatus == 'completed'
-                    ) {
-                      completedProjects++
-                    }
+              let goals = await res.data.message
+              console.log('RAW GOALS', goals)
+
+              goals = goals.map((goal) => {
+                console.log('goal', goal)
+                let completedProjects = 0
+                let totalProjects = 0
+                for (let i = 0; i < goal.projects.length; i++) {
+                  if (goal.projects[i].applicationStatus == 'accepted') {
+                    totalProjects++
                   }
 
-                  if(totalProjects == 0){
-                    totalProjects = 1
+                  if (
+                    goal.projects[i].applicationStatus == 'accepted' &&
+                    goal.projects[i].currentStatus == 'completed'
+                  ) {
+                    completedProjects++
                   }
+                }
 
-                  goalsListTemp.push(new GoalModel(
+                if (totalProjects == 0) {
+                  totalProjects = 1
+                }
+
+                goalsListTemp.push(
+                  new GoalModel(
                     goal.goalName,
                     goal.dateCreated,
                     goal.estimatedFinish,
                     completedProjects,
-                    totalProjects - completedProjects
-                  ))
+                    totalProjects - completedProjects,
+                    goal.goalID
+                  )
+                )
+              })
 
+              setGoalsList(goalsListTemp)
 
-                })
+              setCityName(userRes.data.cityData.city)
+              setStateName(userRes.data.cityData.state)
 
-                setGoalsList(goalsListTemp)
-
-                setCityName(userRes.data.cityData.city)
-                setStateName(userRes.data.cityData.state)
-                
-                console.log('goals', goals)
-                } 
-        
-            })
-        
-          } catch (e) {
-            console.log('error occurred', e)
-          }
-  
-  
+              console.log('goals', goals)
+            }
+          })
+        } catch (e) {
+          console.log('error occurred', e)
         }
-  
-        // async await so I used a separate function
-        getGoals()
-  
-        // cancel subscriptions in the return fn
-        //  return () => {}
-      },
-      [
-        // rerender the useEffect fn
-        // nothing here = it only runs once at the beginning,
-        // if you put something here = it runs when that value changes
-      ]
-    )
+      }
 
+      // async await so I used a separate function
+      getGoals()
+
+      // cancel subscriptions in the return fn
+      //  return () => {}
+    },
+    [
+      // rerender the useEffect fn
+      // nothing here = it only runs once at the beginning,
+      // if you put something here = it runs when that value changes
+    ]
+  )
 
   return (
     <Navigation>
@@ -130,7 +127,11 @@ const Dashboard = () => {
   )
 }
 
-const GoalList: React.FC<{ goals: GoalModel[]; cityName: string; state: string }> = (props) => {
+const GoalList: React.FC<{
+  goals: GoalModel[]
+  cityName: string
+  state: string
+}> = (props) => {
   return (
     <div className='w-full min-w-0 flex flex-col'>
       <div className='flex items-end'>
@@ -142,7 +143,7 @@ const GoalList: React.FC<{ goals: GoalModel[]; cityName: string; state: string }
       <div className='mt-6 text-sm flex justify-between'>
         <p>Current Goals</p>
         <p className='cursor-pointer font-semibold text-communify-green'>
-          <Link href="/goals">View All</Link>
+          <Link href='/goals'>View All</Link>
         </p>
       </div>
       <div className='w-full min-w-0 flex mt-2 overflow-auto'>
@@ -161,6 +162,7 @@ const GoalList: React.FC<{ goals: GoalModel[]; cityName: string; state: string }
               margin={index === 4 ? '' : 'mr-4'}
               completedProjects={goal.completedProjects}
               unFinishedProjects={goal.unFinishedProjects}
+              id={goal.id}
             />
           )
         })}
@@ -177,10 +179,17 @@ const Goal: React.FC<{
   margin: string
   completedProjects: number
   unFinishedProjects: number
+  id: number
 }> = (props) => {
+  const clickHandler = () => {
+    console.log('test', props.id)
+    router.push('/goals/' + props.id)
+  }
+
   return (
     <div
-      className={`px-6 py-6 w-full flex flex-col justify-top items-center bg-communify-black rounded-3xl ${props.margin}`}
+      className={`px-6 py-6 w-full flex flex-col justify-top items-center bg-communify-black rounded-3xl cursor-pointer ${props.margin}`}
+      onClick={clickHandler}
     >
       <div className='relative'>
         {/* <Image src={graphImg} alt='Graph' height='120' width='120' /> */}
